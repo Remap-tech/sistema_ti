@@ -1,0 +1,2721 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Gerenciamento Escolar</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6; /* Cor de fundo suave */
+        }
+        /* Estilo para a barra de rolagem */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 10px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+        /* Estilo para a tela de login */
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #e2e8f0; /* Cor de fundo para a tela de login */
+        }
+        /* Estilos para o modo escuro */
+        body.dark-mode {
+            background-color: #1a202c; /* dark gray */
+            color: #e2e8f0; /* light gray */
+        }
+        body.dark-mode .bg-white {
+            background-color: #2d3748; /* darker gray */
+            color: #e2e8f0;
+        }
+        body.dark-mode .text-gray-800 {
+            color: #e2e8f0;
+        }
+        body.dark-mode .text-gray-700 {
+            color: #cbd5e0;
+        }
+        body.dark-mode .text-gray-600 {
+            color: #a0aec0;
+        }
+        body.dark-mode .text-gray-500 {
+            color: #718096;
+        }
+        body.dark-mode .bg-gray-100 {
+            background-color: #4a5568;
+        }
+        body.dark-mode .border-gray-300 {
+            border-color: #4a5568;
+        }
+        body.dark-mode input, body.dark-mode textarea, body.dark-mode select {
+            background-color: #2d3748;
+            color: #e2e8f0;
+            border-color: #4a5568;
+        }
+        body.dark-mode input:focus, body.dark-mode textarea:focus, body.dark-mode select:focus {
+            border-color: #63b3ed;
+        }
+        body.dark-mode .shadow-md {
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.12);
+        }
+        body.dark-mode .shadow-xl {
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.18);
+        }
+        body.dark-mode .shadow-inner {
+            box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
+        }
+        body.dark-mode .bg-gray-50 {
+            background-color: #2d3748;
+        }
+        body.dark-mode .bg-blue-100 { background-color: #2c5282; }
+        body.dark-mode .bg-yellow-100 { background-color: #8b5f29; }
+        body.dark-mode .bg-orange-100 { background-color: #9c4221; }
+        body.dark-mode .bg-green-100 { background-color: #2f855a; }
+
+        /* Print-specific styles */
+        @media print {
+            body > *:not(.print-content) {
+                display: none !important;
+            }
+            .print-content {
+                display: block !important;
+                width: 100%;
+                margin: 0;
+                padding: 0;
+                font-family: 'Inter', sans-serif;
+                color: #000;
+                background-color: #fff;
+            }
+            .print-header {
+                display: flex;
+                align-items: center;
+                justify-content: center; /* Centraliza o cabeçalho */
+                padding: 20px;
+                border-bottom: 1px solid #ccc;
+                margin-bottom: 20px;
+                text-align: center; /* Centraliza o texto */
+            }
+            .print-header img {
+                height: 50px;
+                width: auto;
+                margin-right: 15px;
+            }
+            .print-header-text {
+                font-size: 1.2em;
+                font-weight: bold;
+                color: #333;
+            }
+            .print-header-text span {
+                display: block;
+                font-size: 0.8em;
+                font-weight: normal;
+                color: #666;
+            }
+            .print-title {
+                text-align: center;
+                font-size: 1.5em;
+                font-weight: bold;
+                margin-bottom: 20px;
+            }
+            .print-item {
+                border: 1px solid #eee;
+                padding: 10px;
+                margin-bottom: 10px;
+                border-radius: 5px;
+            }
+            .signature-field {
+                margin-top: 40px;
+                padding-top: 10px;
+                border-top: 1px solid #ccc;
+                text-align: center;
+                font-size: 0.9em;
+            }
+            .signature-field p {
+                margin: 0;
+                padding: 0;
+            }
+        }
+    </style>
+</head>
+<body class="flex h-screen overflow-hidden">
+
+    <div id="login-screen" class="login-container w-full h-full absolute top-0 left-0 z-50">
+        <div class="bg-white p-8 rounded-lg shadow-xl w-full max-w-md">
+            <div class="flex justify-center mb-6">
+                <img src="https://placehold.co/150x50/000000/FFFFFF?text=LOGO" alt="Logo do Colégio" class="h-12 w-auto rounded-md">
+            </div>
+            <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">Acesso ao Sistema</h2>
+            <form id="login-form" class="space-y-4">
+                <div>
+                    <label for="username" class="block text-gray-700 font-medium mb-2">Usuário:</label>
+                    <input type="text" id="username" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                </div>
+                <div>
+                    <label for="password" class="block text-gray-700 font-medium mb-2">Senha:</label>
+                    <input type="password" id="password" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                </div>
+                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-lg font-semibold transition duration-200">
+                    Entrar
+                </button>
+                <p id="login-error" class="text-red-500 text-center mt-4 hidden">Usuário ou senha incorretos.</p>
+            </form>
+        </div>
+    </div>
+
+    <div id="main-system-content" class="flex w-full h-full hidden">
+        <nav class="w-64 bg-gray-800 text-white p-6 flex flex-col shadow-lg rounded-r-lg">
+            <div class="flex items-center mb-8">
+                <img src="https://placehold.co/50x50/000000/FFFFFF?text=LOGO" alt="Logo do Colégio" class="h-10 w-10 mr-3 rounded-md">
+                <div class="text-2xl font-bold">Ti Oliviano</div>
+            </div>
+            <ul class="space-y-4 flex-grow">
+                <li>
+                    <button class="nav-item w-full text-left py-3 px-4 rounded-lg hover:bg-gray-700 transition duration-200 active-nav" data-target="dashboard-screen">
+                        Dashboard
+                    </button>
+                </li>
+                <li class="border-t border-gray-700 pt-4 mt-4">
+                    <button class="nav-item w-full text-left py-3 px-4 rounded-lg hover:bg-gray-700 transition duration-200" data-target="cadastrar-os">
+                        Cadastrar O.S
+                    </button>
+                </li>
+                <li>
+                    <button class="nav-item w-full text-left py-3 px-4 rounded-lg hover:bg-gray-700 transition duration-200" data-target="cadastro-ocorrencia">
+                        Cadastrar Ocorrência
+                    </button>
+                </li>
+                <li>
+                    <button class="nav-item w-full text-left py-3 px-4 rounded-lg hover:bg-gray-700 transition duration-200" data-target="comodato-screen">
+                        Comodato
+                    </button>
+                </li>
+                <li>
+                    <button class="nav-item w-full text-left py-3 px-4 rounded-lg hover:bg-gray-700 transition duration-200" data-target="cadastro-equipamento">
+                        Cadastrar Equipamento
+                    </button>
+                </li>
+                <li>
+                    <button class="nav-item w-full text-left py-3 px-4 rounded-lg hover:bg-gray-700 transition duration-200" data-target="estoque">
+                        Estoque
+                    </button>
+                </li>
+                <li class="border-t border-gray-700 pt-4 mt-4">
+                    <button class="nav-item w-full text-left py-3 px-4 rounded-lg hover:bg-gray-700 transition duration-200" data-target="relatorios">
+                        Relatórios
+                    </button>
+                </li>
+                <li>
+                    <button class="nav-item w-full text-left py-3 px-4 rounded-lg hover:bg-gray-700 transition duration-200" data-target="gestao-os">
+                        Gestão de O.S
+                    </button>
+                </li>
+                <li>
+                    <button class="nav-item w-full text-left py-3 px-4 rounded-lg hover:bg-gray-700 transition duration-200" data-target="gestao-ocorrencia">
+                        Gestão de Ocorrência
+                    </button>
+                </li>
+                <li>
+                    <button class="nav-item w-full text-left py-3 px-4 rounded-lg hover:bg-gray-700 transition duration-200" data-target="configuracoes">
+                        Configurações
+                    </button>
+                </li>
+            </ul>
+            <div class="mt-8">
+                <button class="w-full bg-red-600 hover:bg-red-700 text-white py-3 px-4 rounded-lg transition duration-200" id="logout-button">
+                    SAIR
+                </button>
+            </div>
+        </nav>
+
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <header class="bg-white p-6 shadow-md flex justify-between items-center rounded-bl-lg">
+                <h1 class="text-3xl font-semibold text-gray-800" id="main-header-title">Dashboard</h1>
+            </header>
+
+            <main class="flex-1 p-8 overflow-y-auto">
+                <section id="dashboard-screen" class="content-section active">
+                    <h2 class="text-2xl font-semibold text-gray-800 mb-6">Visão Geral do Sistema</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-8">
+                        <div class="bg-white p-6 rounded-lg shadow-md text-center">
+                            <h3 class="text-xl font-semibold text-gray-700 mb-4">N° Atendimento</h3>
+                            <div class="text-4xl font-bold text-blue-600" id="atendimento-dia">0</div>
+                            <div class="text-sm text-gray-500">DIA</div>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg shadow-md text-center">
+                            <h3 class="text-xl font-semibold text-gray-700 mb-4">N° Atendimento</h3>
+                            <div class="text-4xl font-bold text-green-600" id="atendimento-semana">0</div>
+                            <div class="text-sm text-gray-500">SEMANA</div>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg shadow-md text-center">
+                            <h3 class="text-xl font-semibold text-gray-700 mb-4">N° Atendimento</h3>
+                            <div class="text-4xl font-bold text-purple-600" id="atendimento-mes">0</div>
+                            <div class="text-sm text-gray-500">MÊS</div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-lg shadow-md mt-8">
+                        <h3 class="text-xl font-semibold text-gray-700 mb-4">Visão Geral de O.S</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 text-center">
+                            <div>
+                                <div class="text-2xl font-bold text-blue-600" id="os-abertas-count">0</div>
+                                <div class="text-sm text-gray-500">Abertas</div>
+                            </div>
+                            <div>
+                                <div class="text-2xl font-bold text-orange-600" id="os-aguardando-count">0</div>
+                                <div class="text-sm text-gray-500">Aguardando</div>
+                            </div>
+                            <div>
+                                <div class="text-2xl font-bold text-yellow-600" id="os-em-atendimento-count">0</div>
+                                <div class="text-sm text-gray-500">Em Atendimento</div>
+                            </div>
+                            <div>
+                                <div class="text-2xl font-bold text-green-600" id="os-concluidas-count">0</div>
+                                <div class="text-sm text-gray-500">Concluídas</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-lg shadow-md mt-8">
+                        <h3 class="text-xl font-semibold text-gray-700 mb-4">Visão Geral de Ocorrências</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+                            <div>
+                                <div class="text-2xl font-bold text-blue-600" id="ocorrencias-abertas-count">0</div>
+                                <div class="text-sm text-gray-500">Abertas</div>
+                            </div>
+                            <div>
+                                <div class="text-2xl font-bold text-yellow-600" id="ocorrencias-em-atendimento-count">0</div>
+                                <div class="text-sm text-gray-500">Em Atendimento</div>
+                            </div>
+                            <div>
+                                <div class="text-2xl font-bold text-green-600" id="ocorrencias-concluidas-count">0</div>
+                                <div class="text-sm text-gray-500">Concluídas</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-lg shadow-md mt-8">
+                        <h3 class="text-xl font-semibold text-gray-700 mb-4">Visão Geral de Comodato (Hoje)</h3>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-center">
+                            <div>
+                                <div class="text-2xl font-bold text-purple-600" id="comodato-entregues-hoje-count">0</div>
+                                <div class="text-sm text-gray-500">Equipamentos Entregues</div>
+                            </div>
+                            <div>
+                                <div class="text-2xl font-bold text-red-600" id="comodato-devolvidos-hoje-count">0</div>
+                                <div class="text-sm text-gray-500">Equipamentos Devolvidos</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="cadastrar-os" class="content-section hidden">
+                    <div class="bg-white p-8 rounded-lg shadow-md">
+                        <h2 class="text-2xl font-semibold text-gray-800 mb-6">Cadastrar Nova Ordem de Serviço (OS)</h2>
+                        <form id="os-form" class="space-y-4">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-gray-700 font-medium mb-2">Nº Ordem de Serviço:</label>
+                                    <span id="os-numero" class="block w-full p-3 bg-gray-100 border border-gray-300 rounded-lg">Gerando...</span>
+                                </div>
+                                <div>
+                                    <label class="block text-gray-700 font-medium mb-2">Data:</label>
+                                    <span id="os-data" class="block w-full p-3 bg-gray-100 border border-gray-300 rounded-lg"></span>
+                                </div>
+                            </div>
+                            <div>
+                                <label for="os-setor-usuario" class="block text-gray-700 font-medium mb-2">Setor do Usuário:</label>
+                                <input type="text" id="os-setor-usuario" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                            </div>
+                            <div>
+                                <label for="os-nome-usuario" class="block text-gray-700 font-medium mb-2">Nome do Usuário:</label>
+                                <input type="text" id="os-nome-usuario" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                            </div>
+                            <div>
+                                <label for="os-tipo-equipamento" class="block text-gray-700 font-medium mb-2">Tipo de Equipamento:</label>
+                                <select id="os-tipo-equipamento" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                                    <option value="">Selecione...</option>
+                                    <option value="Notebook">Notebook</option>
+                                    <option value="Desktop">Desktop</option>
+                                    <option value="Impressora">Impressora</option>
+                                    <option value="Projetor">Projetor</option>
+                                    <option value="PABX">PABX</option>
+                                    <option value="Outros">Outros</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="os-tipo-chamado" class="block text-gray-700 font-medium mb-2">Tipo de Chamado:</label>
+                                <select id="os-tipo-chamado" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                                    <option value="">Selecione...</option>
+                                    <option value="Urgente">Urgente</option>
+                                    <option value="Moderado">Moderado</option>
+                                    <option value="Leve">Leve</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="os-status" class="block text-gray-700 font-medium mb-2">Status:</label>
+                                <select id="os-status" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                                    <option value="Aberto">Aberto</option>
+                                    <option value="Aguardando">Aguardando</option>
+                                    <option value="Em Atendimento">Em Atendimento</option>
+                                    <option value="Concluido">Concluído</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="os-descricao" class="block text-gray-700 font-medium mb-2">Descrição da O.S:</label>
+                                <textarea id="os-descricao" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" rows="4" required></textarea>
+                            </div>
+                            <div>
+                                <label for="os-tecnico-responsavel" class="block text-gray-700 font-medium mb-2">Técnico Responsável:</label>
+                                <input type="text" id="os-tecnico-responsavel" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <button type="submit" class="bg-purple-600 hover:bg-purple-700 text-white py-3 px-6 rounded-lg font-semibold transition duration-200">
+                                Cadastrar OS
+                            </button>
+                        </form>
+                    </div>
+                </section>
+
+                <section id="cadastro-ocorrencia" class="content-section hidden">
+                    <div class="bg-white p-8 rounded-lg shadow-md">
+                        <h2 class="text-2xl font-semibold text-gray-800 mb-6">Cadastrar Nova Ocorrência</h2>
+                        <form id="ocorrencia-form" class="space-y-4">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-gray-700 font-medium mb-2">Nº Ocorrência:</label>
+                                    <span id="ocorrencia-numero" class="block w-full p-3 bg-gray-100 border border-gray-300 rounded-lg">Gerando...</span>
+                                </div>
+                                <div>
+                                    <label class="block text-gray-700 font-medium mb-2">Data:</label>
+                                    <span id="ocorrencia-data" class="block w-full p-3 bg-gray-100 border border-gray-300 rounded-lg"></span>
+                                </div>
+                            </div>
+                            <div>
+                                <label for="ocorrencia-tipo" class="block text-gray-700 font-medium mb-2">Tipo de Ocorrência:</label>
+                                <select id="ocorrencia-tipo" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                                    <option value="">Selecione...</option>
+                                    <option value="Quebra">Quebra</option>
+                                    <option value="Roubo">Roubo</option>
+                                    <option value="Degradacao">Degradação</option>
+                                </select>
+                            </div>
+                            <div class="flex items-end space-x-4">
+                                <div class="flex-grow">
+                                    <label for="ocorrencia-equipamento" class="block text-gray-700 font-medium mb-2">Equipamento:</label>
+                                    <select id="ocorrencia-equipamento" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                                        <option value="">Selecione...</option>
+                                        <option value="Notebook">Notebook</option>
+                                        <option value="Desktop">Desktop</soption>
+                                        <option value="Impressora">Impressora</option>
+                                        <option value="Projetor">Projetor</option>
+                                        <option value="PABX">PABX</option>
+                                        <option value="Outros">Outros</option>
+                                    </select>
+                                </div>
+                                <div id="ocorrencia-equipamento-outros-container" class="hidden flex-grow">
+                                    <label for="ocorrencia-equipamento-outros" class="block text-gray-700 font-medium mb-2">Especificar Outros:</label>
+                                    <input type="text" id="ocorrencia-equipamento-outros" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                </div>
+                            </div>
+                            <div>
+                                <label for="ocorrencia-descricao" class="block text-gray-700 font-medium mb-2">Descrição da Ocorrência:</label>
+                                <textarea id="ocorrencia-descricao" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" rows="4" required></textarea>
+                            </div>
+                            <div>
+                                <label for="ocorrencia-pessoas-envolvidas" class="block text-gray-700 font-medium mb-2">Pessoas Envolvidas:</label>
+                                <input type="text" id="ocorrencia-pessoas-envolvidas" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <div>
+                                <label for="ocorrencia-responsavel" class="block text-gray-700 font-medium mb-2">Responsável pela Ocorrência:</label>
+                                <input type="text" id="ocorrencia-responsavel" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                            </div>
+                            <div>
+                                <label for="ocorrencia-status" class="block text-gray-700 font-medium mb-2">Status:</label>
+                                <select id="ocorrencia-status" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                                    <option value="Aberto">Aberto</option>
+                                    <option value="Em Atendimento">Em Atendimento</option>
+                                    <option value="Aguardando Resolucao">Aguardando Resolução</option>
+                                    <option value="Concluida">Concluída</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-gray-700 font-medium mb-2">Anexar Fotos (até 10):</label>
+                                <input type="file" id="ocorrencia-fotos" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" multiple accept="image/*">
+                                <div id="ocorrencia-fotos-preview" class="mt-4 grid grid-cols-2 md:grid-cols-5 gap-4">
+                                    </div>
+                            </div>
+                            <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-lg font-semibold transition duration-200">
+                                Cadastrar Ocorrência
+                            </button>
+                        </form>
+                    </div>
+                </section>
+
+                <section id="comodato-screen" class="content-section hidden">
+                    <div class="bg-white p-8 rounded-lg shadow-md">
+                        <h2 class="text-2xl font-semibold text-gray-800 mb-6">Gestão de Comodato</h2>
+                        <p class="text-gray-600 mb-4">Esta seção será para gerenciar equipamentos em regime de comodato.</p>
+                        <form id="comodato-form" class="space-y-4">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-gray-700 font-medium mb-2">Data e Horário:</label>
+                                    <span id="comodato-data-horario" class="block w-full p-3 bg-gray-100 border border-gray-300 rounded-lg"></span>
+                                </div>
+                                <div>
+                                    <label for="comodato-nome-professor" class="block text-gray-700 font-medium mb-2">Nome do Professor:</label>
+                                    <input type="text" id="comodato-nome-professor" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                                </div>
+                            </div>
+                            <div>
+                                <label for="comodato-numero-notebook" class="block text-gray-700 font-medium mb-2">Nº do Notebook:</label>
+                                <input type="text" id="comodato-numero-notebook" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <div>
+                                <label for="comodato-numero-projetor" class="block text-gray-700 font-medium mb-2">Nº Controle do Projetor:</label>
+                                <input type="text" id="comodato-numero-projetor" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <button type="submit" class="bg-indigo-600 hover:bg-indigo-700 text-white py-3 px-6 rounded-lg font-semibold transition duration-200">
+                                Registrar Comodato
+                            </button>
+                        </form>
+                        <div id="comodato-list" class="mt-8 space-y-4 max-h-96 overflow-y-auto">
+                            <h3 class="text-xl font-semibold text-gray-700 mb-4">Itens em Comodato</h3>
+                            <p class="text-gray-500 text-center">Nenhum item em comodato registrado ainda.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="cadastro-equipamento" class="content-section hidden">
+                    <div class="bg-white p-8 rounded-lg shadow-md">
+                        <h2 class="text-2xl font-semibold text-gray-800 mb-6">Cadastrar Novo Equipamento</h2>
+                        <form id="equipamento-form" class="space-y-4">
+                            <div>
+                                <label for="equipamento-nome" class="block text-gray-700 font-medium mb-2">Nome do Equipamento:</label>
+                                <input type="text" id="equipamento-nome" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                            </div>
+                            <div class="flex items-end space-x-4">
+                                <div class="flex-grow">
+                                    <label for="equipamento-tipo" class="block text-gray-700 font-medium mb-2">Tipo:</label>
+                                    <select id="equipamento-tipo" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                                        <option value="">Selecione...</option>
+                                        <option value="Notebook">Notebook</option>
+                                        <option value="Desktop">Desktop</option>
+                                        <option value="Projetor">Projetor</option>
+                                        <option value="Impressora">Impressora</option>
+                                        <option value="Telefone">Telefone</option>
+                                        <option value="Outros">Outros</option>
+                                    </select>
+                                </div>
+                                <div id="equipamento-tipo-outros-container" class="hidden flex-grow">
+                                    <label for="equipamento-tipo-outros" class="block text-gray-700 font-medium mb-2">Especificar Outros:</label>
+                                    <input type="text" id="equipamento-tipo-outros" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                </div>
+                            </div>
+                            <div>
+                                <label for="equipamento-serial" class="block text-gray-700 font-medium mb-2">Número de Série:</label>
+                                <input type="text" id="equipamento-serial" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <button type="submit" class="bg-green-600 hover:bg-green-700 text-white py-3 px-6 rounded-lg font-semibold transition duration-200">
+                                Cadastrar Equipamento
+                            </button>
+                        </form>
+                    </div>
+                </section>
+
+                <section id="estoque" class="content-section hidden">
+                    <div class="bg-white p-8 rounded-lg shadow-md">
+                        <h2 class="text-2xl font-semibold text-gray-800 mb-6">Gestão de Estoque</h2>
+
+                        <h3 class="text-xl font-semibold text-gray-700 mb-4">Cadastrar Novo Item</h3>
+                        <form id="stock-form" class="space-y-4 mb-8">
+                            <div>
+                                <label for="stock-item-name" class="block text-gray-700 font-medium mb-2">Nome do Item:</label>
+                                <input type="text" id="stock-item-name" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" required>
+                            </div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label for="stock-quantity" class="block text-gray-700 font-medium mb-2">Quantidade:</label>
+                                    <input type="number" id="stock-quantity" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" required min="0">
+                                </div>
+                                <div>
+                                    <label for="stock-unit" class="block text-gray-700 font-medium mb-2">Unidade de Medida:</label>
+                                    <input type="text" id="stock-unit" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" placeholder="Ex: Unidade, Caixa, Metro" required>
+                                </div>
+                            </div>
+                            <div>
+                                <label for="stock-location" class="block text-gray-700 font-medium mb-2">Localização:</label>
+                                <input type="text" id="stock-location" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" required>
+                            </div>
+                            <div>
+                                <label for="stock-description" class="block text-gray-700 font-medium mb-2">Descrição:</label>
+                                <textarea id="stock-description" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" rows="3"></textarea>
+                            </div>
+                            <button type="submit" class="bg-green-600 hover:bg-green-700 text-white py-3 px-6 rounded-lg font-semibold transition duration-200">
+                                Cadastrar Item
+                            </button>
+                        </form>
+
+                        <h3 class="text-xl font-semibold text-gray-700 mb-4">Itens Atuais no Estoque</h3>
+                        <div id="stock-list" class="space-y-4 max-h-96 overflow-y-auto">
+                            </div>
+                    </div>
+                </section>
+
+                <section id="relatorios" class="content-section hidden">
+                    <div class="bg-white p-8 rounded-lg shadow-md">
+                        <h2 class="text-2xl font-semibold text-gray-800 mb-6">Geração de Relatórios</h2>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                            <div>
+                                <label for="report-start-date" class="block text-gray-700 font-medium mb-2">Data Inicial:</label>
+                                <input type="date" id="report-start-date" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            </div>
+                            <div>
+                                <label for="report-end-date" class="block text-gray-700 font-medium mb-2">Data Final:</label>
+                                <input type="date" id="report-end-date" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            </div>
+                        </div>
+
+                        <div class="mb-6">
+                            <label for="report-period-select" class="block text-gray-700 font-medium mb-2">Período Rápido:</label>
+                            <select id="report-period-select" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="custom">Período Personalizado</option>
+                                <option value="today">Hoje</option>
+                                <option value="last7days">Últimos 7 Dias</option>
+                                <option value="last30days">Últimos 30 Dias</option>
+                                <option value="thisMonth">Este Mês</option>
+                                <option value="thisYear">Este Ano</soption>
+                                <option value="allTime">Todo o Período</option>
+                            </select>
+                        </div>
+                        
+                        <div class="mb-6" id="technician-filter-container">
+                            <label for="report-technician-select" class="block text-gray-700 font-medium mb-2">Filtrar por Técnico:</label>
+                            <select id="report-technician-select" class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option value="all">Todos os Técnicos</option>
+                                </select>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                            <button class="report-button bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-lg font-semibold transition duration-200" data-report-type="os">
+                                Gerar Relatório de O.S
+                            </button>
+                            <button class="report-button bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-lg font-semibold transition duration-200" data-report-type="ocorrencia">
+                                Gerar Relatório de Ocorrências
+                            </button>
+                            <button class="report-button bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-lg font-semibold transition duration-200" data-report-type="comodato">
+                                Gerar Relatório de Comodato
+                            </button>
+                            <button class="report-button bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-lg font-semibold transition duration-200" data-report-type="estoque">
+                                Gerar Relatório de Estoque
+                            </button>
+                            <button class="report-button bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-lg font-semibold transition duration-200" data-report-type="tecnico">
+                                Gerar Relatório por Técnico
+                            </button>
+                        </div>
+
+                        <div class="mt-8 flex justify-center space-x-4">
+                            <button id="print-report-btn" class="bg-gray-600 hover:bg-gray-700 text-white py-2 px-4 rounded-lg transition duration-200">
+                                Imprimir Relatório
+                            </button>
+                            <button id="save-report-pdf-btn" class="bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-lg transition duration-200">
+                                Salvar Relatório em PDF
+                            </button>
+                        </div>
+
+                        <div id="report-results" class="mt-8 bg-gray-50 p-6 rounded-lg shadow-inner max-h-96 overflow-y-auto">
+                            <p class="text-gray-600 text-center">Os resultados do relatório aparecerão aqui.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="gestao-os" class="content-section hidden">
+                    <div class="bg-white p-8 rounded-lg shadow-md">
+                        <h2 class="text-2xl font-semibold text-gray-800 mb-6">Ordens de Serviço (OS)</h2>
+                        <div id="os-list" class="space-y-4 max-h-96 overflow-y-auto">
+                            </div>
+                    </div>
+                </section>
+
+                <section id="gestao-ocorrencia" class="content-section hidden">
+                    <div class="bg-white p-8 rounded-lg shadow-md">
+                        <h2 class="text-2xl font-semibold text-gray-800 mb-6">Gestão de Ocorrências</h2>
+                        <div id="ocorrencias-list" class="space-y-4 max-h-96 overflow-y-auto">
+                            </div>
+                    </div>
+                </section>
+
+                <section id="configuracoes" class="content-section hidden">
+                    <div class="bg-white p-8 rounded-lg shadow-md">
+                        <h2 class="text-2xl font-semibold text-gray-800 mb-6">Configurações do Sistema</h2>
+
+                        <div class="mb-8 p-4 border border-gray-200 rounded-lg">
+                            <h3 class="text-xl font-semibold text-gray-700 mb-4">Logo do Sistema</h3>
+                            <div class="flex items-center space-x-4">
+                                <img src="https://placehold.co/100x100/000000/FFFFFF?text=LOGO" alt="Logo do Sistema" class="h-24 w-24 object-contain rounded-md shadow-sm" id="system-logo-display">
+                                <button class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg transition duration-200" onclick="alertMessage('Funcionalidade de upload de logo em desenvolvimento.', 'info')">
+                                    Alterar Logo
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="mb-8 p-4 border border-gray-200 rounded-lg">
+                            <h3 class="text-xl font-semibold text-gray-700 mb-4">Usuários do Sistema</h3>
+                            <div id="users-list" class="space-y-3 max-h-60 overflow-y-auto mb-4">
+                                </div>
+                            <button class="bg-green-500 hover:bg-green-600 text-white py-2 px-4 rounded-lg transition duration-200" onclick="addNewUser()">
+                                Cadastrar Novo Usuário
+                            </button>
+                        </div>
+
+                        <div class="mb-8 p-4 border border-gray-200 rounded-lg">
+                            <h3 class="text-xl font-semibold text-gray-700 mb-4">Tema do Sistema</h3>
+                            <div class="flex items-center space-x-4">
+                                <span class="text-gray-700">Modo Claro</span>
+                                <label for="theme-toggle" class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" id="theme-toggle" class="sr-only peer">
+                                    <div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 dark:peer-focus:ring-blue-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-blue-600"></div>
+                                </label>
+                                <span class="text-gray-700">Modo Escuro</span>
+                            </div>
+                        </div>
+
+                        <div class="mb-8 p-4 border border-gray-200 rounded-lg">
+                            <h3 class="text-xl font-semibold text-gray-700 mb-4">Gerenciar Status</h3>
+                            <form id="add-status-form" class="space-y-3 mb-4">
+                                <div>
+                                    <label for="new-status-name" class="block text-gray-700 font-medium mb-1">Nome do Status:</label>
+                                    <input type="text" id="new-status-name" class="w-full p-2 border border-gray-300 rounded-lg" required>
+                                </div>
+                                <button type="submit" class="bg-indigo-500 hover:bg-indigo-600 text-white py-2 px-4 rounded-lg transition duration-200">
+                                    Adicionar Status
+                                </button>
+                            </form>
+                            <div id="statuses-list" class="space-y-2 max-h-40 overflow-y-auto">
+                                </div>
+                        </div>
+
+                        <div class="mb-8 p-4 border border-gray-200 rounded-lg">
+                            <h3 class="text-xl font-semibold text-gray-700 mb-4">Gerenciar Tipos de Equipamentos</h3>
+                            <form id="add-equipment-type-form" class="space-y-3 mb-4">
+                                <div>
+                                    <label for="new-equipment-type-name" class="block text-gray-700 font-medium mb-1">Nome do Tipo:</label>
+                                    <input type="text" id="new-equipment-type-name" class="w-full p-2 border border-gray-300 rounded-lg" required>
+                                </div>
+                                <button type="submit" class="bg-indigo-500 hover:bg-indigo-600 text-white py-2 px-4 rounded-lg transition duration-200">
+                                    Adicionar Tipo
+                                </button>
+                            </form>
+                            <div id="equipment-types-list" class="space-y-2 max-h-40 overflow-y-auto">
+                                </div>
+                        </div>
+
+                        <div class="p-4 border border-gray-200 rounded-lg">
+                            <h3 class="text-xl font-semibold text-gray-700 mb-4">Outras Configurações</h3>
+                            <p class="text-gray-600">Aqui você pode adicionar outras configurações gerais do sistema, como nome da escola, informações de contato, etc.</p>
+                            <button class="mt-4 bg-gray-500 hover:bg-gray-600 text-white py-2 px-4 rounded-lg transition duration-200" onclick="alertMessage('Funcionalidade de salvar configurações em desenvolvimento.', 'info')">
+                                Salvar Outras Configurações
+                            </button>
+                        </div>
+
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <div id="custom-modal" class="fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center hidden z-[100]">
+        <div class="bg-white p-6 rounded-lg shadow-xl w-full max-w-sm">
+            <h3 id="modal-title" class="text-xl font-semibold text-gray-800 mb-4"></h3>
+            <p id="modal-message" class="text-gray-700 mb-6"></p>
+            <div id="modal-input-area" class="space-y-4 mb-6 hidden">
+                </div>
+            <div class="flex justify-end space-x-3">
+                <button id="modal-cancel-btn" class="bg-gray-300 hover:bg-gray-400 text-gray-800 py-2 px-4 rounded-lg transition duration-200">Cancelar</button>
+                <button id="modal-confirm-btn" class="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg transition duration-200">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Array para simular o armazenamento de ocorrências
+        let occurrences = [];
+        // Array para simular o armazenamento de equipamentos
+        let equipments = [];
+        // Array para simular o armazenamento de Ordens de Serviço
+        let serviceOrders = [];
+        // Array para simular o armazenamento de Comodatos
+        let comodatos = [];
+        // Array para simular o armazenamento de Itens de Estoque
+        let stockItems = [];
+        // Novos arrays para configurações
+        let users = [{ id: 'user-admin', username: 'admin', role: 'Administrador' }];
+        let customStatuses = [
+            { id: 'status-aberto', name: 'Aberto' },
+            { id: 'status-aguardando', name: 'Aguardando' },
+            { id: 'status-ematendimento', name: 'Em Atendimento' },
+            { id: 'status-concluido', name: 'Concluído' },
+            { id: 'status-aguardandoresolucao', name: 'Aguardando Resolução' }
+        ];
+        let customEquipmentTypes = [
+            { id: 'type-notebook', name: 'Notebook' },
+            { id: 'type-desktop', name: 'Desktop' },
+            { id: 'type-impressora', name: 'Impressora' },
+            { id: 'type-projetor', name: 'Projetor' },
+            { id: 'type-telefone', name: 'Telefone' },
+            { id: 'type-pabx', name: 'PABX' }
+        ];
+
+
+        // Elementos da tela de login
+        const loginScreen = document.getElementById('login-screen');
+        const loginForm = document.getElementById('login-form');
+        const loginError = document.getElementById('login-error');
+        const mainSystemContent = document.getElementById('main-system-content');
+        const logoutButton = document.getElementById('logout-button');
+        const mainHeaderTitle = document.getElementById('main-header-title');
+
+        // Modal elements
+        const customModal = document.getElementById('custom-modal');
+        const modalTitle = document.getElementById('modal-title');
+        const modalMessage = document.getElementById('modal-message');
+        const modalInputArea = document.getElementById('modal-input-area');
+        const modalCancelBtn = document.getElementById('modal-cancel-btn');
+        const modalConfirmBtn = document.getElementById('modal-confirm-btn');
+
+        let currentModalCallback = null; // Stores the callback function for the modal confirmation
+
+        function showModal(title, message, showInput = false, inputFields = [], confirmText = 'Confirmar', cancelText = 'Cancelar') {
+            modalTitle.textContent = title;
+            modalMessage.textContent = message;
+            modalConfirmBtn.textContent = confirmText;
+            modalCancelBtn.textContent = cancelText;
+
+            modalInputArea.innerHTML = ''; // Clear previous inputs
+            if (showInput) {
+                modalInputArea.classList.remove('hidden');
+                inputFields.forEach(field => {
+                    const label = document.createElement('label');
+                    label.textContent = field.label;
+                    label.htmlFor = `modal-input-${field.id}`;
+                    label.className = 'block text-gray-700 font-medium mb-1';
+                    modalInputArea.appendChild(label);
+
+                    if (field.tagName === 'textarea') {
+                        const textarea = document.createElement('textarea');
+                        textarea.id = `modal-input-${field.id}`;
+                        textarea.value = field.value || '';
+                        textarea.className = 'w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500';
+                        textarea.rows = field.rows || 3;
+                        modalInputArea.appendChild(textarea);
+                    } else if (field.tagName === 'select') {
+                        const select = document.createElement('select');
+                        select.id = `modal-input-${field.id}`;
+                        select.className = 'w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500';
+                        field.options.forEach(optionData => {
+                            const option = document.createElement('option');
+                            option.value = optionData.value;
+                            option.textContent = optionData.text;
+                            if (optionData.value === field.value) {
+                                option.selected = true;
+                            }
+                            select.appendChild(option);
+                        });
+                        modalInputArea.appendChild(select);
+                    } else {
+                        const input = document.createElement('input');
+                        input.type = field.type || 'text';
+                        input.id = `modal-input-${field.id}`;
+                        input.value = field.value || '';
+                        input.className = 'w-full p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500';
+                        if (field.min !== undefined) input.min = field.min;
+                        modalInputArea.appendChild(input);
+                    }
+                });
+            } else {
+                modalInputArea.classList.add('hidden');
+            }
+
+            customModal.classList.remove('hidden');
+
+            return new Promise((resolve) => {
+                currentModalCallback = (confirmed, data = {}) => {
+                    customModal.classList.add('hidden');
+                    resolve({ confirmed, data });
+                };
+            });
+        }
+
+        // Event listeners for modal buttons
+        modalConfirmBtn.addEventListener('click', () => {
+            if (currentModalCallback) {
+                const inputData = {};
+                document.querySelectorAll('#modal-input-area input, #modal-input-area textarea, #modal-input-area select').forEach(input => {
+                    inputData[input.id.replace('modal-input-', '')] = input.value;
+                });
+                currentModalCallback(true, inputData);
+                currentModalCallback = null;
+            }
+        });
+
+        modalCancelBtn.addEventListener('click', () => {
+            if (currentModalCallback) {
+                currentModalCallback(false);
+                currentModalCallback = null;
+            }
+        });
+
+        // Função para gerar um ID único para OS ou Ocorrência
+        function generateUniqueId(prefix) {
+            return prefix + Date.now() + '-' + Math.floor(Math.random() * 1000);
+        }
+
+        // Função para obter a data atual formatada (DD/MM/YYYY)
+        function getCurrentDateFormatted() {
+            const today = new Date();
+            const day = String(today.getDate()).padStart(2, '0');
+            const month = String(today.getMonth() + 1).padStart(2, '0'); // Mês é 0-indexed
+            const year = today.getFullYear();
+            return `${day}/${month}/${year}`;
+        }
+
+        // Função para obter a data e hora atual formatada (DD/MM/YYYY HH:MM:SS)
+        function getCurrentDateTimeFormatted() {
+            const now = new Date();
+            const date = getCurrentDateFormatted();
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            return `${date} ${hours}:${minutes}:${seconds}`;
+        }
+
+        // Função para converter data DD/MM/YYYY para objeto Date
+        function parseDate(dateString) {
+            const [day, month, year] = dateString.split('/').map(Number);
+            return new Date(year, month - 1, day);
+        }
+
+        // Função para atualizar os contadores de atendimento (agora na seção Dashboard)
+        function updateDashboardOverviews() {
+            const today = new Date();
+            const todayDateString = getCurrentDateFormatted();
+
+            // Total Atendimentos (OS + Ocorrências) - Antigo
+            const startOfWeek = new Date(today.getFullYear(), today.getMonth(), today.getDate() - today.getDay());
+            const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+
+            let dailyTotalCount = 0;
+            let weeklyTotalCount = 0;
+            let monthlyTotalCount = 0;
+
+            // Count from occurrences
+            occurrences.forEach(occ => {
+                const occDate = parseDate(occ.date);
+                if (occDate.toDateString() === today.toDateString()) {
+                    dailyTotalCount++;
+                }
+                if (occDate >= startOfWeek) {
+                    weeklyTotalCount++;
+                }
+                if (occDate >= startOfMonth) {
+                    monthlyTotalCount++;
+                }
+            });
+            // Count from service orders
+            serviceOrders.forEach(os => {
+                const osDate = parseDate(os.date);
+                if (osDate.toDateString() === today.toDateString()) {
+                    dailyTotalCount++;
+                }
+                if (osDate >= startOfWeek) {
+                    weeklyTotalCount++;
+                }
+                if (osDate >= startOfMonth) {
+                    monthlyTotalCount++;
+                }
+            });
+
+            document.getElementById('atendimento-dia').textContent = dailyTotalCount;
+            document.getElementById('atendimento-semana').textContent = weeklyTotalCount;
+            document.getElementById('atendimento-mes').textContent = monthlyTotalCount;
+
+
+            // Visão Geral de O.S
+            let osAbertas = 0;
+            let osAguardando = 0;
+            let osEmAtendimento = 0;
+            let osConcluidas = 0;
+
+            serviceOrders.forEach(os => {
+                if (os.status === 'Aberto') osAbertas++;
+                else if (os.status === 'Aguardando') osAguardando++;
+                else if (os.status === 'Em Atendimento') osEmAtendimento++;
+                else if (os.status === 'Concluido') osConcluidas++;
+            });
+
+            document.getElementById('os-abertas-count').textContent = osAbertas;
+            document.getElementById('os-aguardando-count').textContent = osAguardando;
+            document.getElementById('os-em-atendimento-count').textContent = osEmAtendimento;
+            document.getElementById('os-concluidas-count').textContent = osConcluidas;
+
+            // Visão Geral de Ocorrências
+            let ocorrenciasAbertas = 0;
+            let ocorrenciasEmAtendimento = 0;
+            let ocorrenciasConcluidas = 0;
+
+            occurrences.forEach(occ => {
+                if (occ.status === 'Aberto') ocorrenciasAbertas++;
+                else if (occ.status === 'Em Atendimento') ocorrenciasEmAtendimento++;
+                else if (occ.status === 'Concluida') ocorrenciasConcluidas++;
+            });
+            // Note: "Aguardando Resolução" will be grouped with "Aberto" for this simplified overview
+            occurrences.forEach(occ => {
+                if (occ.status === 'Aguardando Resolucao') ocorrenciasAbertas++;
+            });
+
+
+            document.getElementById('ocorrencias-abertas-count').textContent = ocorrenciasAbertas;
+            document.getElementById('ocorrencias-em-atendimento-count').textContent = ocorrenciasEmAtendimento;
+            document.getElementById('ocorrencias-concluidas-count').textContent = ocorrenciasConcluidas;
+
+            // Visão Geral de Comodato
+            let comodatoEntreguesHoje = 0;
+            let comodatoDevolvidosHoje = 0;
+
+            comodatos.forEach(comodato => {
+                const comodatoDate = comodato.dataHorario.split(' ')[0]; // Extract date part
+                if (comodatoDate === todayDateString) {
+                    if (comodato.dataDevolucao === todayDateString) { // Check if returned today
+                        comodatoDevolvidosHoje++;
+                    } else if (!comodato.dataDevolucao) { // If not returned yet, and delivered today
+                        comodatoEntreguesHoje++;
+                    }
+                }
+            });
+
+            document.getElementById('comodato-entregues-hoje-count').textContent = comodatoEntreguesHoje;
+            document.getElementById('comodato-devolvidos-hoje-count').textContent = comodatoDevolvidosHoje;
+        }
+
+        // Função para renderizar as listas de ocorrências
+        function renderOccurrences() {
+            const ocorrenciasList = document.getElementById('ocorrencias-list');
+            ocorrenciasList.innerHTML = '';
+
+            if (occurrences.length === 0) {
+                ocorrenciasList.innerHTML = '<p class="text-gray-500 text-center">Nenhuma ocorrência cadastrada ainda.</p>';
+                return;
+            }
+
+            occurrences.forEach(occ => {
+                const occElement = document.createElement('div');
+                occElement.className = 'bg-gray-100 p-4 rounded-lg shadow-sm flex flex-col md:flex-row md:items-center justify-between';
+
+                let statusBgClass = '';
+                if (occ.status === 'Aberto') {
+                    statusBgClass = 'bg-blue-100';
+                } else if (occ.status === 'Em Atendimento') {
+                    statusBgClass = 'bg-yellow-100';
+                } else if (occ.status === 'Aguardando Resolucao') {
+                    statusBgClass = 'bg-orange-100';
+                } else if (occ.status === 'Concluida') {
+                    statusBgClass = 'bg-green-100';
+                }
+                occElement.classList.add(statusBgClass);
+
+                occElement.innerHTML = `
+                    <div class="flex-grow">
+                        <h4 class="font-semibold text-gray-800">OC Nº: ${occ.ocorrenciaNumber} - ${occ.tipoOcorrencia}</h4>
+                        <p class="text-sm text-gray-600">Data: ${occ.date}</p>
+                        <p class="text-sm text-gray-600">Equipamento: ${occ.equipment}${occ.otherEquipment ? ` (${occ.otherEquipment})` : ''}</p>
+                        <p class="text-sm text-gray-600">Responsável: ${occ.responsavel}</p>
+                        <p class="text-sm text-gray-600">Status: <span class="font-medium">${occ.status}</span></p>
+                        <p class="text-xs text-gray-500">${occ.description || 'Sem descrição.'}</p>
+                    </div>
+                    <div class="mt-3 md:mt-0 flex space-x-2">
+                        ${occ.status !== 'Em Atendimento' && occ.status !== 'Concluida' ? `
+                            <button class="action-occurrence-btn bg-blue-500 hover:bg-blue-600 text-white text-xs py-1 px-2 rounded-md transition duration-200" data-id="${occ.id}" data-action="atender">Atender</button>
+                        ` : ''}
+                        ${occ.status !== 'Concluida' ? `
+                            <button class="action-occurrence-btn bg-green-500 hover:bg-green-600 text-white text-xs py-1 px-2 rounded-md transition duration-200" data-id="${occ.id}" data-action="finalizar">Finalizar</button>
+                        ` : ''}
+                        <button class="delete-occurrence-item bg-red-500 hover:bg-red-600 text-white text-xs py-1 px-2 rounded-md transition duration-200" data-id="${occ.id}">Excluir</button>
+                        <button class="print-occurrence-item bg-gray-500 hover:bg-gray-600 text-white text-xs py-1 px-2 rounded-md transition duration-200" data-id="${occ.id}">Imprimir</button>
+                    </div>
+                `;
+                ocorrenciasList.appendChild(occElement);
+            });
+
+            document.querySelectorAll('.action-occurrence-btn').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const id = e.target.dataset.id;
+                    const action = e.target.dataset.action;
+                    handleOccurrenceAction(id, action);
+                });
+            });
+
+            document.querySelectorAll('.delete-occurrence-item').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const id = e.target.dataset.id;
+                    deleteOccurrence(id);
+                });
+            });
+
+            document.querySelectorAll('.print-occurrence-item').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const id = e.target.dataset.id;
+                    printSingleOccurrence(id);
+                });
+            });
+
+            updateDashboardOverviews();
+        }
+
+        // Função para renderizar a lista de equipamentos
+        function renderEquipments() {
+            const equipmentsList = document.getElementById('equipamentos-list');
+            equipmentsList.innerHTML = '';
+
+            if (equipments.length === 0) {
+                equipmentsList.innerHTML = '<p class="text-gray-500 col-span-full text-center">Nenhum equipamento cadastrado ainda.</p>';
+                return;
+            }
+
+            equipments.forEach(eq => {
+                const eqElement = document.createElement('div');
+                eqElement.className = 'bg-gray-100 p-4 rounded-lg shadow-sm';
+                eqElement.innerHTML = `
+                    <h4 class="font-semibold text-gray-800">${eq.name}</h4>
+                    <p class="text-sm text-gray-600">Tipo: ${eq.type}${eq.otherType ? ` (${eq.otherType})` : ''}</p>
+                    <p class="text-sm text-gray-600">N° Série: ${eq.serialNumber || 'N/A'}</p>
+                `;
+                equipmentsList.appendChild(eqElement);
+            });
+        }
+
+        // Função para renderizar a lista de Ordens de Serviço
+        function renderServiceOrders() {
+            const osList = document.getElementById('os-list');
+            osList.innerHTML = '';
+
+            if (serviceOrders.length === 0) {
+                osList.innerHTML = '<p class="text-gray-500 text-center">Nenhuma OS cadastrada ainda.</p>';
+                return;
+            }
+
+            serviceOrders.forEach(os => {
+                const osElement = document.createElement('div');
+                osElement.className = 'bg-gray-100 p-4 rounded-lg shadow-sm flex flex-col md:flex-row md:items-center justify-between';
+                osElement.innerHTML = `
+                    <div class="flex-grow">
+                        <h4 class="font-semibold text-gray-800">OS Nº: ${os.osNumber} - ${os.tipoChamado}</h4>
+                        <p class="text-sm text-gray-600">Data: ${os.date}</p>
+                        <p class="text-sm text-gray-600">Usuário: ${os.nomeUsuario} (${os.setorUsuario})</p>
+                        <p class="text-sm text-gray-600">Equipamento: ${os.tipoEquipamento}</p>
+                        <p class="text-sm text-gray-600">Descrição: ${os.descricao}</p>
+                        <p class="text-sm text-gray-600">Técnico: ${os.tecnicoResponsavel || 'N/A'}</p>
+                        <p class="text-sm text-gray-600">Status: <span class="font-medium">${os.status}</span></p>
+                    </div>
+                    <div class="mt-3 md:mt-0 flex space-x-2">
+                        ${os.status !== 'Em Atendimento' && os.status !== 'Concluido' ? `
+                            <button class="action-os-btn bg-blue-500 hover:bg-blue-600 text-white text-xs py-1 px-2 rounded-md transition duration-200" data-id="${os.id}" data-action="atender">Atender</button>
+                        ` : ''}
+                        ${os.status !== 'Concluido' ? `
+                            <button class="action-os-btn bg-green-500 hover:bg-green-600 text-white text-xs py-1 px-2 rounded-md transition duration-200" data-id="${os.id}" data-action="finalizar">Finalizar</button>
+                        ` : ''}
+                        <button class="delete-os-item bg-red-500 hover:bg-red-600 text-white text-xs py-1 px-2 rounded-md transition duration-200" data-id="${os.id}">Excluir</button>
+                        <button class="print-os-item bg-gray-500 hover:bg-gray-600 text-white text-xs py-1 px-2 rounded-md transition duration-200" data-id="${os.id}">Imprimir</button>
+                    </div>
+                `;
+                osList.appendChild(osElement);
+            });
+
+            document.querySelectorAll('.action-os-btn').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const id = e.target.dataset.id;
+                    const action = e.target.dataset.action;
+                    handleServiceOrderAction(id, action);
+                });
+            });
+
+            document.querySelectorAll('.delete-os-item').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const id = e.target.dataset.id;
+                    deleteServiceOrder(id);
+                });
+            });
+
+            document.querySelectorAll('.print-os-item').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const id = e.target.dataset.id;
+                    printSingleServiceOrder(id);
+                });
+            });
+
+            updateDashboardOverviews();
+        }
+
+        // Função para renderizar a lista de Comodatos
+        function renderComodatos() {
+            const comodatoList = document.getElementById('comodato-list');
+            comodatoList.innerHTML = '';
+
+            if (comodatos.length === 0) {
+                comodatoList.innerHTML = '<p class="text-gray-500 text-center">Nenhum item em comodato registrado ainda.</p>';
+                return;
+            }
+
+            comodatos.forEach(comodato => {
+                const comodatoElement = document.createElement('div');
+                let comodatoStatusClass = '';
+                if (comodato.dataDevolucao) {
+                    comodatoStatusClass = 'bg-green-100'; // Devolvido
+                } else {
+                    comodatoStatusClass = 'bg-blue-100'; // Entregue
+                }
+                comodatoElement.className = `p-4 rounded-lg shadow-sm flex flex-col md:flex-row md:items-center justify-between ${comodatoStatusClass}`;
+                
+                comodatoElement.innerHTML = `
+                    <div class="flex-grow">
+                        <h4 class="font-semibold text-gray-800">Comodato em: ${comodato.dataHorario}</h4>
+                        <p class="text-sm text-gray-600">Professor: ${comodato.nomeProfessor}</p>
+                        ${comodato.numeroNotebook ? `<p class="text-sm text-gray-600">Nº Notebook: ${comodato.numeroNotebook}</p>` : ''}
+                        ${comodato.numeroProjetor ? `<p class="text-sm text-gray-600">Nº Projetor: ${comodato.numeroProjetor}</p>` : ''}
+                        ${comodato.dataDevolucao ? `<p class="text-sm text-gray-600 font-medium">Status: Devolvido em ${comodato.dataDevolucao}</p>` : '<p class="text-sm text-gray-600 font-medium">Status: Entregue</p>'}
+                    </div>
+                    <div class="mt-3 md:mt-0 flex space-x-2">
+                        ${comodato.dataDevolucao ? `
+                            <button class="action-comodato-btn bg-blue-500 hover:bg-blue-600 text-white text-xs py-1 px-2 rounded-md transition duration-200" data-id="${comodato.id}" data-action="reentregar">Re-entregar</button>
+                        ` : `
+                            <button class="action-comodato-btn bg-green-500 hover:bg-green-600 text-white text-xs py-1 px-2 rounded-md transition duration-200" data-id="${comodato.id}" data-action="devolver">Devolver</button>
+                        `}
+                        <button class="delete-comodato-item bg-red-500 hover:bg-red-600 text-white text-xs py-1 px-2 rounded-md transition duration-200" data-id="${comodato.id}">Excluir</button>
+                    </div>
+                `;
+                comodatoList.appendChild(comodatoElement);
+            });
+
+            document.querySelectorAll('.action-comodato-btn').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const id = e.target.dataset.id;
+                    const action = e.target.dataset.action;
+                    handleComodatoAction(id, action);
+                });
+            });
+
+            document.querySelectorAll('.delete-comodato-item').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const id = e.target.dataset.id;
+                    deleteComodato(id);
+                });
+            });
+
+            updateDashboardOverviews();
+        }
+
+        // Função para renderizar a lista de Itens de Estoque
+        function renderStockItems() {
+            const stockList = document.getElementById('stock-list');
+            stockList.innerHTML = '';
+
+            if (stockItems.length === 0) {
+                stockList.innerHTML = '<p class="text-gray-500 text-center">Nenhum item no estoque cadastrado ainda.</p>';
+                return;
+            }
+
+            stockItems.forEach(item => {
+                const itemElement = document.createElement('div');
+                itemElement.className = 'bg-gray-100 p-4 rounded-lg shadow-sm flex flex-col md:flex-row md:items-center justify-between';
+                itemElement.innerHTML = `
+                    <div class="flex-grow">
+                        <h4 class="font-semibold text-gray-800">${item.name} <span class="text-sm text-gray-500">(${item.quantity} ${item.unit})</span></h4>
+                        <p class="text-sm text-gray-600">Localização: ${item.location}</p>
+                        <p class="text-xs text-gray-500">${item.description || 'Sem descrição.'}</p>
+                    </div>
+                    <div class="mt-3 md:mt-0 flex space-x-2">
+                        <button class="edit-stock-item bg-yellow-500 hover:bg-yellow-600 text-white text-xs py-1 px-2 rounded-md transition duration-200" data-id="${item.id}">Alterar</button>
+                        <button class="delete-stock-item bg-red-500 hover:bg-red-600 text-white text-xs py-1 px-2 rounded-md transition duration-200" data-id="${item.id}">Excluir</button>
+                    </div>
+                `;
+                stockList.appendChild(itemElement);
+            });
+
+            document.querySelectorAll('.edit-stock-item').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const id = e.target.dataset.id;
+                    editStockItem(id);
+                });
+            });
+
+            document.querySelectorAll('.delete-stock-item').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    const id = e.target.dataset.id;
+                    deleteStockItem(id);
+                });
+            });
+        }
+
+        // Event listener para o formulário de cadastro de ocorrências
+        document.getElementById('ocorrencia-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const ocorrenciaNumber = document.getElementById('ocorrencia-numero').textContent;
+            const date = document.getElementById('ocorrencia-data').textContent;
+            const tipoOcorrencia = document.getElementById('ocorrencia-tipo').value;
+            let equipment = document.getElementById('ocorrencia-equipamento').value;
+            const otherEquipment = (equipment === 'Outros') ? document.getElementById('ocorrencia-equipamento-outros').value : '';
+            if (equipment === 'Outros' && otherEquipment) {
+                equipment = otherEquipment;
+            }
+            const description = document.getElementById('ocorrencia-descricao').value;
+            const pessoasEnvolvidas = document.getElementById('ocorrencia-pessoas-envolvidas').value;
+            const responsavel = document.getElementById('ocorrencia-responsavel').value;
+            const status = document.getElementById('ocorrencia-status').value;
+            const fotosInput = document.getElementById('ocorrencia-fotos');
+            
+            const fotos = Array.from(fotosInput.files).map(file => file.name);
+
+            const newOccurrence = {
+                id: generateUniqueId('OC-'),
+                ocorrenciaNumber,
+                date,
+                tipoOcorrencia,
+                equipment,
+                otherEquipment,
+                description,
+                pessoasEnvolvidas,
+                responsavel,
+                status,
+                fotos,
+                resolution: '', // New field
+                responsibleSignatureName: '', // New field
+                occurrencePartySignatureName: '' // New field
+            };
+
+            occurrences.push(newOccurrence);
+            document.getElementById('ocorrencia-form').reset();
+            document.getElementById('ocorrencia-equipamento-outros-container').classList.add('hidden');
+            document.getElementById('ocorrencia-fotos-preview').innerHTML = '';
+            
+            document.getElementById('ocorrencia-numero').textContent = generateUniqueId('OC-');
+            document.getElementById('ocorrencia-data').textContent = getCurrentDateFormatted();
+
+            renderOccurrences();
+            updateDashboardOverviews();
+            alertMessage('Ocorrência cadastrada com sucesso!', 'success');
+        });
+
+        // Event listener para o formulário de cadastro de OS
+        document.getElementById('os-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const osNumber = document.getElementById('os-numero').textContent;
+            const date = document.getElementById('os-data').textContent;
+            const setorUsuario = document.getElementById('os-setor-usuario').value;
+            const nomeUsuario = document.getElementById('os-nome-usuario').value;
+            let tipoEquipamento = document.getElementById('os-tipo-equipamento').value;
+            const tipoChamado = document.getElementById('os-tipo-chamado').value;
+            const status = document.getElementById('os-status').value;
+            const descricao = document.getElementById('os-descricao').value;
+            const tecnicoResponsavel = document.getElementById('os-tecnico-responsavel').value;
+
+            if (tipoEquipamento === 'Outros' && document.getElementById('os-tipo-equipamento-outros')) {
+                 tipoEquipamento = document.getElementById('os-tipo-equipamento-outros').value;
+            }
+
+            const newOS = {
+                id: generateUniqueId('OS-'),
+                osNumber,
+                date,
+                setorUsuario,
+                nomeUsuario,
+                tipoEquipamento,
+                tipoChamado,
+                status,
+                descricao,
+                tecnicoResponsavel,
+                resolution: '',
+                partsUsed: [],
+                servicesPerformed: '',
+                userSignatureName: ''
+            };
+            serviceOrders.push(newOS);
+            document.getElementById('os-form').reset();
+            document.getElementById('os-numero').textContent = generateUniqueId('OS-');
+            document.getElementById('os-data').textContent = getCurrentDateFormatted();
+            renderServiceOrders();
+            updateDashboardOverviews();
+            alertMessage('Ordem de Serviço cadastrada com sucesso!', 'success');
+        });
+
+        // Event listener para o formulário de cadastro de equipamento
+        document.getElementById('equipamento-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const name = document.getElementById('equipamento-nome').value;
+            let type = document.getElementById('equipamento-tipo').value;
+            const otherType = (type === 'Outros') ? document.getElementById('equipamento-tipo-outros').value : '';
+            if (type === 'Outros' && otherType) {
+                type = otherType;
+            }
+            const serialNumber = document.getElementById('equipamento-serial').value;
+
+            const newEquipment = {
+                id: generateUniqueId('EQ-'),
+                name,
+                type,
+                otherType,
+                serialNumber
+            };
+            equipments.push(newEquipment);
+            document.getElementById('equipamento-form').reset();
+            document.getElementById('equipamento-tipo-outros-container').classList.add('hidden');
+            document.getElementById('equipamento-tipo-outros').value = '';
+            renderEquipments();
+            alertMessage('Equipamento cadastrado com sucesso!', 'success');
+        });
+
+        // Event listener para o formulário de comodato
+        document.getElementById('comodato-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const dataHorario = document.getElementById('comodato-data-horario').textContent;
+            const nomeProfessor = document.getElementById('comodato-nome-professor').value;
+            const numeroNotebook = document.getElementById('comodato-numero-notebook').value;
+            const numeroProjetor = document.getElementById('comodato-numero-projetor').value;
+
+            const newComodato = {
+                id: generateUniqueId('CM-'),
+                dataHorario,
+                nomeProfessor,
+                numeroNotebook,
+                numeroProjetor,
+                dataDevolucao: ''
+            };
+            comodatos.push(newComodato);
+            document.getElementById('comodato-form').reset();
+            document.getElementById('comodato-data-horario').textContent = getCurrentDateTimeFormatted();
+            renderComodatos();
+            updateDashboardOverviews();
+            alertMessage('Comodato registrado com sucesso!', 'success');
+        });
+
+        // Funções para Alterar e Excluir Comodatos (usando o modal personalizado)
+        async function handleComodatoAction(id, action) {
+            const comodatoIndex = comodatos.findIndex(item => item.id === id);
+            if (comodatoIndex === -1) return;
+
+            const comodatoToModify = comodatos[comodatoIndex];
+            let title, message, confirmText, inputFields = [];
+
+            if (action === 'devolver') {
+                title = `Devolver Item: ${comodatoToModify.numeroNotebook || comodatoToModify.numeroProjetor || 'Item'}`;
+                message = 'Confirme a data de devolução para este item:';
+                confirmText = 'Confirmar Devolução';
+                // Adiciona o campo de data de devolução ao modal
+                inputFields = [{ id: 'dataDevolucao', label: 'Data de Devolução:', type: 'date', value: new Date().toISOString().split('T')[0] }];
+            } else if (action === 'reentregar') {
+                title = `Re-entregar Item: ${comodatoToModify.numeroNotebook || comodatoToModify.numeroProjetor || 'Item'}`;
+                message = 'Tem certeza que deseja marcar este item como re-entregue? Isso removerá a data de devolução.';
+                confirmText = 'Confirmar Re-entrega';
+            } else {
+                return;
+            }
+
+            const { confirmed, data } = await showModal(title, message, inputFields.length > 0, inputFields, confirmText);
+
+            if (confirmed) {
+                if (action === 'devolver') {
+                    // Pega a data do modal, ou a data atual se não preenchida
+                    comodatoToModify.dataDevolucao = data.dataDevolucao ? data.dataDevolucao.split('-').reverse().join('/') : getCurrentDateFormatted();
+                    alertMessage('Item devolvido com sucesso!', 'success');
+                } else if (action === 'reentregar') {
+                    comodatoToModify.dataDevolucao = ''; // Limpa a data de devolução
+                    alertMessage('Item marcado como re-entregue com sucesso!', 'success');
+                }
+                renderComodatos();
+            } else {
+                alertMessage(`Ação de ${action} cancelada.`, 'info');
+            }
+        }
+
+        async function deleteComodato(id) {
+            const { confirmed } = await showModal(
+                'Confirmar Exclusão',
+                'Tem certeza que deseja excluir este comodato? Esta ação não pode ser desfeita.',
+                false, [], 'Excluir', 'Cancelar'
+            );
+
+            if (confirmed) {
+                comodatos = comodatos.filter(item => item.id !== id);
+                alertMessage('Comodato excluído com sucesso!', 'success');
+                renderComodatos();
+            } else {
+                alertMessage('Exclusão de comodato cancelada.', 'info');
+            }
+        }
+
+        // Event listener para o formulário de cadastro de estoque
+        document.getElementById('stock-form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            const name = document.getElementById('stock-item-name').value;
+            const quantity = document.getElementById('stock-quantity').value;
+            const unit = document.getElementById('stock-unit').value;
+            const location = document.getElementById('stock-location').value;
+            const description = document.getElementById('stock-description').value;
+
+            const newItem = {
+                id: generateUniqueId('ST-'),
+                name,
+                quantity: parseInt(quantity),
+                unit,
+                location,
+                description
+            };
+            stockItems.push(newItem);
+            document.getElementById('stock-form').reset();
+            renderStockItems();
+            alertMessage('Item de estoque cadastrado com sucesso!', 'success');
+        });
+
+        // Funções para Alterar e Excluir Itens do Estoque (usando o modal personalizado)
+        async function editStockItem(id) {
+            const itemIndex = stockItems.findIndex(item => item.id === id);
+            if (itemIndex === -1) return;
+
+            const itemToEdit = stockItems[itemIndex];
+
+            const { confirmed, data } = await showModal(
+                'Alterar Item do Estoque',
+                'Preencha os novos dados para o item:',
+                true,
+                [
+                    { id: 'name', label: 'Nome do Item:', value: itemToEdit.name },
+                    { id: 'quantity', label: 'Quantidade:', type: 'number', value: itemToEdit.quantity, min: 0 },
+                    { id: 'unit', label: 'Unidade de Medida:', value: itemToEdit.unit },
+                    { id: 'location', label: 'Localização:', value: itemToEdit.location },
+                    { id: 'description', label: 'Descrição:', tagName: 'textarea', value: itemToEdit.description, rows: 3 }
+                ],
+                'Salvar Alterações'
+            );
+
+            if (confirmed) {
+                if (isNaN(parseInt(data.quantity)) || parseInt(data.quantity) < 0) {
+                    alertMessage('Quantidade inválida. A alteração foi cancelada.', 'error');
+                    return;
+                }
+
+                itemToEdit.name = data.name;
+                itemToEdit.quantity = parseInt(data.quantity);
+                itemToEdit.unit = data.unit;
+                itemToEdit.location = data.location;
+                itemToEdit.description = data.description;
+
+                alertMessage('Item de estoque alterado com sucesso!', 'success');
+                renderStockItems();
+            } else {
+                alertMessage('Alteração de item de estoque cancelada.', 'info');
+            }
+        }
+
+        async function deleteStockItem(id) {
+            const { confirmed } = await showModal(
+                'Confirmar Exclusão',
+                'Tem certeza que deseja excluir este item do estoque? Esta ação não pode ser desfeita.',
+                false,
+                [],
+                'Excluir',
+                'Cancelar'
+            );
+
+            if (confirmed) {
+                stockItems = stockItems.filter(item => item.id !== id);
+                alertMessage('Item de estoque excluído com sucesso!', 'success');
+                renderStockItems();
+            } else {
+                alertMessage('Exclusão de item de estoque cancelada.', 'info');
+            }
+        }
+
+        // Funções para Alterar e Excluir Ordens de Serviço (usando o modal personalizado)
+        async function handleServiceOrderAction(id, action) {
+            const osIndex = serviceOrders.findIndex(os => os.id === id);
+            if (osIndex === -1) return;
+
+            const osToModify = serviceOrders[osIndex];
+
+            if (action === 'atender') {
+                osToModify.status = 'Em Atendimento';
+                alertMessage(`OS Nº ${osToModify.osNumber} alterada para: Em Atendimento`, 'info');
+                renderServiceOrders();
+            } else if (action === 'finalizar') {
+                const { confirmed, data } = await showModal(
+                    `Finalizar OS Nº: ${osToModify.osNumber}`,
+                    'Preencha os detalhes da resolução:',
+                    true,
+                    [
+                        { id: 'resolution', label: 'Resolução:', tagName: 'textarea', rows: 4, value: osToModify.resolution },
+                        { id: 'partsUsed', label: 'Peças Utilizadas (Nome, Quantidade - ex: "Cabo HDMI, 2; Mouse, 1"):', tagName: 'textarea', rows: 3, value: osToModify.partsUsed.map(p => `${p.name}, ${p.quantity}`).join('; ') },
+                        { id: 'servicesPerformed', label: 'Serviços Realizados:', tagName: 'textarea', rows: 4, value: osToModify.servicesPerformed },
+                        { id: 'userSignatureName', label: 'Nome para Assinatura do Usuário:', type: 'text', value: osToModify.userSignatureName || osToModify.nomeUsuario }
+                    ],
+                    'Concluir OS'
+                );
+
+                if (confirmed) {
+                    osToModify.resolution = data.resolution;
+                    osToModify.servicesPerformed = data.servicesPerformed;
+                    osToModify.userSignatureName = data.userSignatureName;
+
+                    // Process parts used and decrement stock
+                    osToModify.partsUsed = []; // Clear previous parts
+                    const partsInput = data.partsUsed.split(';').map(s => s.trim()).filter(s => s);
+                    let stockUpdateSuccess = true;
+                    partsInput.forEach(partString => {
+                        const [name, quantityStr] = partString.split(',').map(s => s.trim());
+                        const quantity = parseInt(quantityStr);
+
+                        if (name && !isNaN(quantity) && quantity > 0) {
+                            const stockItem = stockItems.find(item => item.name.toLowerCase() === name.toLowerCase());
+                            if (stockItem && stockItem.quantity >= quantity) {
+                                stockItem.quantity -= quantity;
+                                osToModify.partsUsed.push({ name, quantity });
+                            } else {
+                                stockUpdateSuccess = false;
+                                alertMessage(`Estoque insuficiente para: "${name}". OS não foi concluída.`, 'error');
+                            }
+                        }
+                    });
+
+                    if (stockUpdateSuccess) {
+                        osToModify.status = 'Concluido';
+                        alertMessage(`OS Nº ${osToModify.osNumber} concluída com sucesso!`, 'success');
+                        renderServiceOrders();
+                        renderStockItems(); // Update stock display
+                    } else {
+                        alertMessage('OS não foi concluída devido a problemas no estoque. Por favor, verifique as peças utilizadas.', 'error');
+                    }
+                } else {
+                    alertMessage('Finalização de OS cancelada.', 'info');
+                }
+            }
+        }
+
+        async function deleteServiceOrder(id) {
+            const { confirmed } = await showModal(
+                'Confirmar Exclusão',
+                'Tem certeza que deseja excluir esta Ordem de Serviço? Esta ação não pode ser desfeita.',
+                false,
+                [],
+                'Excluir',
+                'Cancelar'
+            );
+
+            if (confirmed) {
+                serviceOrders = serviceOrders.filter(os => os.id !== id);
+                alertMessage('Ordem de Serviço excluída com sucesso!', 'success');
+                renderServiceOrders();
+            } else {
+                alertMessage('Exclusão de Ordem de Serviço cancelada.', 'info');
+            }
+        }
+
+        // Funções para Alterar e Excluir Ocorrências (usando o modal personalizado)
+        async function handleOccurrenceAction(id, action) {
+            const occIndex = occurrences.findIndex(occ => occ.id === id);
+            if (occIndex === -1) return;
+
+            const occToModify = occurrences[occIndex];
+
+            if (action === 'atender') {
+                occToModify.status = 'Em Atendimento';
+                alertMessage(`Ocorrência Nº ${occToModify.ocorrenciaNumber} alterada para: Em Atendimento`, 'info');
+                renderOccurrences();
+            } else if (action === 'finalizar') {
+                const { confirmed, data } = await showModal(
+                    `Finalizar Ocorrência Nº: ${occToModify.ocorrenciaNumber}`,
+                    'Preencha a resolução da ocorrência:',
+                    true,
+                    [
+                        { id: 'resolution', label: 'Resolução da Ocorrência:', tagName: 'textarea', rows: 4, value: occToModify.resolution },
+                        { id: 'responsibleSignatureName', label: 'Nome para Assinatura do Responsável:', type: 'text', value: occToModify.responsibleSignatureName || occToModify.responsavel },
+                        { id: 'occurrencePartySignatureName', label: 'Nome para Assinatura da Parte Envolvida:', type: 'text', value: occToModify.occurrencePartySignatureName || occToModify.pessoasEnvolvidas }
+                    ],
+                    'Concluir Ocorrência'
+                );
+
+                if (confirmed) {
+                    occToModify.resolution = data.resolution;
+                    occToModify.responsibleSignatureName = data.responsibleSignatureName;
+                    occToModify.occurrencePartySignatureName = data.occurrencePartySignatureName;
+                    occToModify.status = 'Concluida';
+                    alertMessage(`Ocorrência Nº ${occToModify.ocorrenciaNumber} concluída com sucesso!`, 'success');
+                    renderOccurrences();
+                } else {
+                    alertMessage('Finalização de Ocorrência cancelada.', 'info');
+                }
+            }
+        }
+
+        async function deleteOccurrence(id) {
+            const { confirmed } = await showModal(
+                'Confirmar Exclusão',
+                'Tem certeza que deseja excluir esta Ocorrência? Esta ação não pode ser desfeita.',
+                false,
+                [],
+                'Excluir',
+                'Cancelar'
+            );
+
+            if (confirmed) {
+                occurrences = occurrences.filter(occ => occ.id !== id);
+                alertMessage('Ocorrência excluída com sucesso!', 'success');
+                renderOccurrences();
+            } else {
+                alertMessage('Exclusão de Ocorrência cancelada.', 'info');
+            }
+        }
+
+
+        document.getElementById('ocorrencia-equipamento').addEventListener('change', function() {
+            const otherEquipmentContainer = document.getElementById('ocorrencia-equipamento-outros-container');
+            if (this.value === 'Outros') {
+                otherEquipmentContainer.classList.remove('hidden');
+                document.getElementById('ocorrencia-equipamento-outros').setAttribute('required', 'true');
+            } else {
+                otherEquipmentContainer.classList.add('hidden');
+                document.getElementById('ocorrencia-equipamento-outros').removeAttribute('required');
+                document.getElementById('ocorrencia-equipamento-outros').value = '';
+            }
+        });
+
+        document.getElementById('equipamento-tipo').addEventListener('change', function() {
+            const otherTypeContainer = document.getElementById('equipamento-tipo-outros-container');
+            if (this.value === 'Outros') {
+                otherTypeContainer.classList.remove('hidden');
+                document.getElementById('equipamento-tipo-outros').setAttribute('required', 'true');
+            } else {
+                otherTypeContainer.classList.add('hidden');
+                document.getElementById('equipamento-tipo-outros').removeAttribute('required');
+                document.getElementById('equipamento-tipo-outros').value = '';
+            }
+        });
+
+        document.getElementById('ocorrencia-fotos').addEventListener('change', function() {
+            const previewContainer = document.getElementById('ocorrencia-fotos-preview');
+            previewContainer.innerHTML = '';
+            const files = this.files;
+
+            if (files.length > 10) {
+                alertMessage('Você pode anexar no máximo 10 fotos.', 'error');
+                this.value = '';
+                return;
+            }
+
+            Array.from(files).forEach(file => {
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const imgDiv = document.createElement('div');
+                        imgDiv.className = 'relative group';
+                        imgDiv.innerHTML = `
+                            <img src="${e.target.result}" alt="Preview" class="w-full h-24 object-cover rounded-lg shadow-sm">
+                            <button type="button" class="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 text-xs opacity-0 group-hover:opacity-100 transition-opacity remove-photo" data-name="${file.name}">X</button>
+                        `;
+                        previewContainer.appendChild(imgDiv);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            previewContainer.addEventListener('click', function(e) {
+                if (e.target.classList.contains('remove-photo')) {
+                    e.target.closest('.group').remove();
+                }
+            });
+        });
+
+        const reportResultsDiv = document.getElementById('report-results');
+        const reportStartDateInput = document.getElementById('report-start-date');
+        const reportEndDateInput = document.getElementById('report-end-date');
+        const reportPeriodSelect = document.getElementById('report-period-select');
+        const reportTechnicianSelect = document.getElementById('report-technician-select');
+        const printReportBtn = document.getElementById('print-report-btn');
+        const saveReportPdfBtn = document.getElementById('save-report-pdf-btn');
+
+        function filterByDateRange(items, startDate, endDate) {
+            const start = startDate ? new Date(startDate) : null;
+            const end = endDate ? new Date(endDate) : null;
+
+            return items.filter(item => {
+                const itemDate = parseDate(item.date || item.dataHorario.split(' ')[0]);
+                if (start && itemDate < start) return false;
+                if (end && itemDate > end) return false;
+                return true;
+            });
+        }
+
+        function generatePrintHeader(reportTitle) {
+            return `
+                <div class="print-header">
+                    <img src="https://placehold.co/50x50/000000/FFFFFF?text=LOGO" alt="Logo do Colégio">
+                    <div class="print-header-text">
+                        Colégio Olivetano <span>Setor de TI</span>
+                    </div>
+                </div>
+                <h1 class="print-title">${reportTitle}</h1>
+            `;
+        }
+
+        function printContent(contentHtml, title) {
+            const printWindow = window.open('', '_blank');
+            printWindow.document.open();
+            printWindow.document.write(`
+                <html>
+                <head>
+                    <title>${title}</title>
+                    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+                    <style>
+                        body { font-family: 'Inter', sans-serif; margin: 20px; color: #333; }
+                        .print-header { display: flex; align-items: center; justify-content: center; padding: 20px; border-bottom: 1px solid #ccc; margin-bottom: 20px; text-align: center; }
+                        .print-header img { height: 50px; width: auto; margin-right: 15px; }
+                        .print-header-text { font-size: 1.2em; font-weight: bold; color: #333; }
+                        .print-header-text span { display: block; font-size: 0.8em; font-weight: normal; color: #666; }
+                        .print-title { text-align: center; font-size: 1.5em; font-weight: bold; margin-bottom: 20px; }
+                        .print-item { border: 1px solid #eee; padding: 10px; margin-bottom: 10px; border-radius: 5px; }
+                        p { margin-bottom: 5px; }
+                        .signature-field { margin-top: 40px; padding-top: 10px; border-top: 1px solid #ccc; text-align: center; font-size: 0.9em; }
+                        .signature-field p { margin: 0; padding: 0; }
+                    </style>
+                </head>
+                <body>
+                    ${generatePrintHeader(title)}
+                    <div class="print-body">${contentHtml}</div>
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
+            printWindow.print();
+        }
+
+        function generateReport(reportType) {
+            reportResultsDiv.innerHTML = '';
+            
+            let filteredItems = [];
+            let reportTitle = '';
+            const selectedTechnician = reportTechnicianSelect.value;
+
+            const startDate = reportStartDateInput.value;
+            const endDate = reportEndDateInput.value;
+
+            if (!startDate || !endDate) {
+                alertMessage('Por favor, selecione um período ou use as opções rápidas.', 'error');
+                return;
+            }
+
+            const displayStartDate = startDate.split('-').reverse().join('/');
+            const displayEndDate = endDate.split('-').reverse().join('/');
+
+
+            let reportContentHtml = '';
+
+            if (reportType === 'os') {
+                reportTitle = `Relatório de Ordens de Serviço (${displayStartDate} a ${displayEndDate})`;
+                filteredItems = filterByDateRange(serviceOrders, startDate, endDate);
+                if (selectedTechnician !== 'all') {
+                    filteredItems = filteredItems.filter(os => os.tecnicoResponsavel === selectedTechnician);
+                }
+                if (filteredItems.length === 0) {
+                    reportContentHtml = `<p class="text-gray-600 text-center">Nenhuma Ordem de Serviço encontrada para o período e técnico selecionados.</p>`;
+                } else {
+                    filteredItems.forEach(os => {
+                        reportContentHtml += `
+                            <div class="print-item">
+                                <p class="font-semibold">OS Nº: ${os.osNumber}</p>
+                                <p class="text-sm">Data: ${os.date}</p>
+                                <p class="text-sm">Usuário: ${os.nomeUsuario} (${os.setorUsuario})</p>
+                                <p class="text-sm">Equipamento: ${os.tipoEquipamento}</p>
+                                <p class="text-sm">Chamado: ${os.tipoChamado}</p>
+                                <p class="text-sm">Status: ${os.status}</p>
+                                <p class="text-sm">Técnico: ${os.tecnicoResponsavel}</p>
+                                <p class="text-sm">Descrição: ${os.descricao}</p>
+                                ${os.resolution ? `<p class="text-sm">Resolução: ${os.resolution}</p>` : ''}
+                                ${os.servicesPerformed ? `<p class="text-sm">Serviços Realizados: ${os.servicesPerformed}</p>` : ''}
+                                ${os.partsUsed && os.partsUsed.length > 0 ? `<p class="text-sm">Peças Utilizadas: ${os.partsUsed.map(p => `${p.name} (${p.quantity})`).join(', ')}</p>` : ''}
+                            </div>
+                        `;
+                    });
+                }
+
+            } else if (reportType === 'ocorrencia') {
+                reportTitle = `Relatório de Ocorrências (${displayStartDate} a ${displayEndDate})`;
+                filteredItems = filterByDateRange(occurrences, startDate, endDate);
+                if (selectedTechnician !== 'all') {
+                    filteredItems = filteredItems.filter(occ => occ.responsavel === selectedTechnician);
+                }
+                if (filteredItems.length === 0) {
+                    reportContentHtml = `<p class="text-gray-600 text-center">Nenhuma Ocorrência encontrada para o período e técnico selecionados.</p>`;
+                } else {
+                    filteredItems.forEach(occ => {
+                        reportContentHtml += `
+                            <div class="print-item">
+                                <p class="font-semibold">OC Nº: ${occ.ocorrenciaNumber}</p>
+                                <p class="text-sm">Data: ${occ.date}</p>
+                                <p class="text-sm">Tipo: ${occ.tipoOcorrencia}</p>
+                                <p class="text-sm">Equipamento: ${occ.equipment}${occ.otherEquipment ? ` (${occ.otherEquipment})` : ''}</p>
+                                <p class="text-sm">Responsável: ${occ.responsavel}</p>
+                                <p class="text-sm">Status: ${occ.status}</p>
+                                <p class="text-sm">Descrição: ${occ.description}</p>
+                                ${occ.resolution ? `<p class="text-sm">Resolução: ${occ.resolution}</p>` : ''}
+                            </div>
+                        `;
+                    });
+                }
+
+            } else if (reportType === 'comodato') {
+                reportTitle = `Relatório de Comodatos (${displayStartDate} a ${displayEndDate})`;
+                filteredItems = comodatos.filter(item => {
+                    const itemDatePart = item.dataHorario.split(' ')[0];
+                    return filterByDateRange([{ date: itemDatePart }], startDate, endDate).length > 0;
+                });
+                if (selectedTechnician !== 'all') {
+                    filteredItems = filteredItems.filter(comodato => comodato.nomeProfessor === selectedTechnician);
+                }
+                if (filteredItems.length === 0) {
+                    reportContentHtml = `<p class="text-gray-600 text-center">Nenhum Comodato encontrado para o período e técnico selecionados.</p>`;
+                } else {
+                    filteredItems.forEach(comodato => {
+                        reportContentHtml += `
+                            <div class="print-item">
+                                <p class="font-semibold">Comodato em: ${comodato.dataHorario}</p>
+                                <p class="text-sm">Professor: ${comodato.nomeProfessor}</p>
+                                ${comodato.numeroNotebook ? `<p class="text-sm">Nº Notebook: ${comodato.numeroNotebook}</p>` : ''}
+                                ${comodato.numeroProjetor ? `<p class="text-sm">Nº Projetor: ${comodato.numeroProjetor}</p>` : ''}
+                                ${comodato.dataDevolucao ? `<p class="text-sm">Data Devolução: ${comodato.dataDevolucao}</p>` : ''}
+                            </div>
+                        `;
+                    });
+                }
+
+            } else if (reportType === 'estoque') {
+                reportTitle = `Relatório de Estoque (Itens Atuais)`;
+                if (stockItems.length === 0) {
+                    reportContentHtml = `<p class="text-gray-600 text-center">Nenhum item no estoque para exibir.</p>`;
+                } else {
+                    stockItems.forEach(item => {
+                        reportContentHtml += `
+                            <div class="print-item">
+                                <p class="font-semibold">Item: ${item.name}</p>
+                                <p class="text-sm">Quantidade: ${item.quantity} ${item.unit}</p>
+                                <p class="text-sm">Localização: ${item.location}</p>
+                                <p class="text-sm">Descrição: ${item.description || 'N/A'}</p>
+                            </div>
+                        `;
+                    });
+                    reportContentHtml += `<p class="text-gray-500 mt-4">Nota: Este relatório exibe o estoque atual. Para relatórios de entrada/saída, seria necessário um sistema de transações de estoque.</p>`;
+                }
+
+            } else if (reportType === 'tecnico') {
+                if (selectedTechnician === 'all') {
+                    alertMessage('Por favor, selecione um técnico específico para gerar o relatório por técnico.', 'info');
+                    return;
+                }
+                reportTitle = `Relatório de Atividades do Técnico: ${selectedTechnician} (${displayStartDate} a ${displayEndDate})`;
+                
+                const technicianOs = filterByDateRange(serviceOrders, startDate, endDate)
+                                    .filter(os => os.tecnicoResponsavel === selectedTechnician);
+                const technicianOccurrences = filterByDateRange(occurrences, startDate, endDate)
+                                            .filter(occ => occ.responsavel === selectedTechnician);
+                const technicianComodatos = comodatos.filter(item => {
+                    const itemDatePart = item.dataHorario.split(' ')[0];
+                    return filterByDateRange([{ date: itemDatePart }], startDate, endDate).length > 0;
+                }).filter(comodato => comodato.nomeProfessor === selectedTechnician);
+
+                if (technicianOs.length === 0 && technicianOccurrences.length === 0 && technicianComodatos.length === 0) {
+                    reportContentHtml = `<p class="text-gray-600 text-center">Nenhuma atividade encontrada para o técnico ${selectedTechnician} no período selecionado.</p>`;
+                } else {
+                    if (technicianOs.length > 0) {
+                        reportContentHtml += `<h4 class="text-lg font-semibold text-gray-700 mt-4 mb-2">Ordens de Serviço:</h4>`;
+                        technicianOs.forEach(os => {
+                            reportContentHtml += `
+                                <div class="print-item">
+                                    <p class="font-semibold">OS Nº: ${os.osNumber}</p>
+                                    <p class="text-sm">Data: ${os.date}</p>
+                                    <p class="text-sm">Usuário: ${os.nomeUsuario} (${os.setorUsuario})</p>
+                                    <p class="text-sm">Equipamento: ${os.tipoEquipamento}</p>
+                                    <p class="text-sm">Chamado: ${os.tipoChamado}</p>
+                                    <p class="text-sm">Status: ${os.status}</p>
+                                    <p class="text-sm">Técnico: ${os.tecnicoResponsavel}</p>
+                                    <p class="text-sm">Descrição: ${os.descricao}</p>
+                                </div>
+                            `;
+                        });
+                    }
+                    if (technicianOccurrences.length > 0) {
+                        reportContentHtml += `<h4 class="text-lg font-semibold text-gray-700 mt-4 mb-2">Ocorrências:</h4>`;
+                        technicianOccurrences.forEach(occ => {
+                            reportContentHtml += `
+                                <div class="print-item">
+                                    <p class="font-semibold">OC Nº: ${occ.ocorrenciaNumber}</p>
+                                    <p class="text-sm">Data: ${occ.date}</p>
+                                    <p class="text-sm">Tipo: ${occ.tipoOcorrencia}</p>
+                                    <p class="text-sm">Equipamento: ${occ.equipment}${occ.otherEquipment ? ` (${occ.otherEquipment})` : ''}</p>
+                                    <p class="text-sm">Status: ${occ.status}</p>
+                                    <p class="text-sm">Descrição: ${occ.description}</p>
+                                </div>
+                            `;
+                        });
+                    }
+                    if (technicianComodatos.length > 0) {
+                        reportContentHtml += `<h4 class="text-lg font-semibold text-gray-700 mt-4 mb-2">Comodatos:</h4>`;
+                        technicianComodatos.forEach(comodato => {
+                            reportContentHtml += `
+                                <div class="print-item">
+                                    <p class="font-semibold">Comodato em: ${comodato.dataHorario}</p>
+                                    <p class="text-sm">Professor: ${comodato.nomeProfessor}</p>
+                                    ${comodato.numeroNotebook ? `<p class="text-sm">Nº Notebook: ${comodato.numeroNotebook}</p>` : ''}
+                                    ${comodato.numeroProjetor ? `<p class="text-sm">Nº Projetor: ${comodato.numeroProjetor}</p>` : ''}
+                                    ${comodato.dataDevolucao ? `<p class="text-sm">Data Devolução: ${comodato.dataDevolucao}</p>` : ''}
+                                </div>
+                            `;
+                        });
+                    }
+                }
+            }
+            
+            reportResultsDiv.innerHTML = reportContentHtml;
+            reportResultsDiv.insertAdjacentHTML('afterbegin', `<h3 class="text-xl font-bold text-gray-800 mb-4">${reportTitle}</h3>`);
+        }
+
+        function populateTechnicianDropdown() {
+            const technicians = new Set();
+            serviceOrders.forEach(os => {
+                if (os.tecnicoResponsavel) technicians.add(os.tecnicoResponsavel);
+            });
+            occurrences.forEach(occ => {
+                if (occ.responsavel) technicians.add(occ.responsavel);
+            });
+            comodatos.forEach(comodato => {
+                if (comodato.nomeProfessor) technicians.add(comodato.nomeProfessor);
+            });
+
+            reportTechnicianSelect.innerHTML = '<option value="all">Todos os Técnicos</option>';
+            technicians.forEach(tech => {
+                const option = document.createElement('option');
+                option.value = tech;
+                option.textContent = tech;
+                reportTechnicianSelect.appendChild(option);
+            });
+        }
+
+        document.querySelectorAll('.report-button').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const reportType = e.target.dataset.reportType;
+                generateReport(reportType);
+            });
+        });
+
+        printReportBtn.addEventListener('click', () => {
+            const contentToPrint = document.getElementById('report-results').innerHTML;
+            const reportTitle = document.querySelector('#report-results h3').textContent;
+            printContent(contentToPrint, reportTitle);
+        });
+
+        saveReportPdfBtn.addEventListener('click', () => {
+            const contentToPrint = document.getElementById('report-results').innerHTML;
+            const reportTitle = document.querySelector('#report-results h3').textContent;
+            printContent(contentToPrint, reportTitle);
+            alertMessage('Para salvar como PDF, por favor, selecione "Salvar como PDF" nas opções da sua impressora.', 'info');
+        });
+
+        reportPeriodSelect.addEventListener('change', function() {
+            const selectedPeriod = this.value;
+            const today = new Date();
+            let startDate = null;
+            let endDate = null;
+
+            switch (selectedPeriod) {
+                case 'today':
+                    startDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+                    endDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+                    break;
+                case 'last7days':
+                    startDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 6);
+                    endDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+                    break;
+                case 'last30days':
+                    startDate = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 29);
+                    endDate = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+                    break;
+                case 'thisMonth':
+                    startDate = new Date(today.getFullYear(), today.getMonth(), 1);
+                    endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+                    break;
+                case 'thisYear':
+                    startDate = new Date(today.getFullYear(), 0, 1);
+                    endDate = new Date(today.getFullYear(), 11, 31);
+                    break;
+                case 'allTime':
+                    break;
+                case 'custom':
+                default:
+                    break;
+            }
+
+            if (selectedPeriod !== 'custom') {
+                reportStartDateInput.value = startDate ? startDate.toISOString().split('T')[0] : '';
+                reportEndDateInput.value = endDate ? endDate.toISOString().split('T')[0] : '';
+            }
+        });
+
+        document.getElementById('ocorrencia-equipamento').addEventListener('change', function() {
+            const otherEquipmentContainer = document.getElementById('ocorrencia-equipamento-outros-container');
+            if (this.value === 'Outros') {
+                otherEquipmentContainer.classList.remove('hidden');
+                document.getElementById('ocorrencia-equipamento-outros').setAttribute('required', 'true');
+            } else {
+                otherEquipmentContainer.classList.add('hidden');
+                document.getElementById('ocorrencia-equipamento-outros').removeAttribute('required');
+                document.getElementById('ocorrencia-equipamento-outros').value = '';
+            }
+        });
+
+        document.getElementById('equipamento-tipo').addEventListener('change', function() {
+            const otherTypeContainer = document.getElementById('equipamento-tipo-outros-container');
+            if (this.value === 'Outros') {
+                otherTypeContainer.classList.remove('hidden');
+                document.getElementById('equipamento-tipo-outros').setAttribute('required', 'true');
+            } else {
+                otherTypeContainer.classList.add('hidden');
+                document.getElementById('equipamento-tipo-outros').removeAttribute('required');
+                document.getElementById('equipamento-tipo-outros').value = '';
+            }
+        });
+
+        document.getElementById('ocorrencia-fotos').addEventListener('change', function() {
+            const previewContainer = document.getElementById('ocorrencia-fotos-preview');
+            previewContainer.innerHTML = '';
+            const files = this.files;
+
+            if (files.length > 10) {
+                alertMessage('Você pode anexar no máximo 10 fotos.', 'error');
+                this.value = '';
+                return;
+            }
+
+            Array.from(files).forEach(file => {
+                if (file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        const imgDiv = document.createElement('div');
+                        imgDiv.className = 'relative group';
+                        imgDiv.innerHTML = `
+                            <img src="${e.target.result}" alt="Preview" class="w-full h-24 object-cover rounded-lg shadow-sm">
+                            <button type="button" class="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 text-xs opacity-0 group-hover:opacity-100 transition-opacity remove-photo" data-name="${file.name}">X</button>
+                        `;
+                        previewContainer.appendChild(imgDiv);
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            previewContainer.addEventListener('click', function(e) {
+                if (e.target.classList.contains('remove-photo')) {
+                    e.target.closest('.group').remove();
+                }
+            });
+        });
+
+
+        document.querySelectorAll('.nav-item').forEach(button => {
+            button.addEventListener('click', (e) => {
+                const targetId = e.target.dataset.target;
+
+                document.querySelectorAll('.nav-item').forEach(btn => {
+                    btn.classList.remove('active-nav', 'bg-gray-700');
+                });
+                e.target.classList.add('active-nav', 'bg-gray-700');
+
+
+                document.querySelectorAll('.content-section').forEach(section => {
+                    section.classList.add('hidden');
+                });
+
+                document.getElementById(targetId).classList.remove('hidden');
+
+                switch (targetId) {
+                    case 'dashboard-screen':
+                        mainHeaderTitle.textContent = 'Dashboard';
+                        updateDashboardOverviews();
+                        break;
+                    case 'cadastrar-os':
+                        mainHeaderTitle.textContent = 'Cadastrar Nova Ordem de Serviço (OS)';
+                        document.getElementById('os-numero').textContent = generateUniqueId('OS-');
+                        document.getElementById('os-data').textContent = getCurrentDateFormatted();
+                        break;
+                    case 'cadastro-ocorrencia':
+                        mainHeaderTitle.textContent = 'Cadastrar Nova Ocorrência';
+                        document.getElementById('ocorrencia-numero').textContent = generateUniqueId('OC-');
+                        document.getElementById('ocorrencia-data').textContent = getCurrentDateFormatted();
+                        document.getElementById('ocorrencia-equipamento-outros-container').classList.add('hidden');
+                        document.getElementById('ocorrencia-fotos-preview').innerHTML = '';
+                        break;
+                    case 'comodato-screen':
+                        mainHeaderTitle.textContent = 'Gestão de Comodato';
+                        document.getElementById('comodato-data-horario').textContent = getCurrentDateTimeFormatted();
+                        renderComodatos();
+                        break;
+                    case 'cadastro-equipamento':
+                        mainHeaderTitle.textContent = 'Cadastrar Novo Equipamento';
+                        document.getElementById('equipamento-tipo-outros-container').classList.add('hidden');
+                        document.getElementById('equipamento-tipo-outros').value = '';
+                        break;
+                    case 'estoque':
+                        mainHeaderTitle.textContent = 'Gestão de Estoque';
+                        renderStockItems();
+                        break;
+                    case 'relatorios':
+                        mainHeaderTitle.textContent = 'Geração de Relatórios';
+                        populateTechnicianDropdown();
+                        reportResultsDiv.innerHTML = '<p class="text-gray-600 text-center">Os resultados do relatório aparecerão aqui.</p>';
+                        reportPeriodSelect.value = 'today';
+                        reportPeriodSelect.dispatchEvent(new Event('change'));
+                        break;
+                    case 'gestao-os':
+                        mainHeaderTitle.textContent = 'Gestão de Ordens de Serviço';
+                        renderServiceOrders();
+                        break;
+                    case 'gestao-ocorrencia':
+                        mainHeaderTitle.textContent = 'Gestão de Ocorrências';
+                        renderOccurrences();
+                        break;
+                    case 'configuracoes':
+                        mainHeaderTitle.textContent = 'Configurações do Sistema';
+                        renderUsers();
+                        renderStatuses();
+                        renderEquipmentTypes();
+                        break;
+                    case 'equipamentos':
+                        mainHeaderTitle.textContent = 'Equipamentos Cadastrados';
+                        renderEquipments();
+                        break;
+                    default:
+                        mainHeaderTitle.textContent = 'Bem-vindo!';
+                }
+            });
+        });
+
+        function alertMessage(message, type = 'info') {
+            const messageBox = document.createElement('div');
+            messageBox.className = `fixed top-4 right-4 p-4 rounded-lg shadow-lg text-white z-50`;
+
+            if (type === 'success') {
+                messageBox.classList.add('bg-green-500');
+            } else if (type === 'error') {
+                messageBox.classList.add('bg-red-500');
+            } else {
+                messageBox.classList.add('bg-blue-500');
+            }
+
+            messageBox.textContent = message;
+            document.body.appendChild(messageBox);
+
+            setTimeout(() => {
+                messageBox.remove();
+            }, 3000);
+        }
+
+        const usersList = document.getElementById('users-list');
+
+        function renderUsers() {
+            usersList.innerHTML = '';
+            if (users.length === 0) {
+                usersList.innerHTML = '<p class="text-gray-500 text-center">Nenhum usuário cadastrado.</p>';
+                return;
+            }
+            users.forEach(user => {
+                const userElement = document.createElement('div');
+                userElement.className = 'bg-gray-50 p-3 rounded-md shadow-sm flex justify-between items-center';
+                userElement.innerHTML = `
+                    <div>
+                        <p class="font-semibold text-gray-800">${user.username} <span class="text-sm text-gray-600">(${user.role})</span></p>
+                    </div>
+                    <div class="flex space-x-2">
+                        <button class="edit-user-btn bg-yellow-500 hover:bg-yellow-600 text-white text-xs py-1 px-2 rounded-md transition duration-200" data-id="${user.id}">Alterar</button>
+                        <button class="delete-user-btn bg-red-500 hover:bg-red-600 text-white text-xs py-1 px-2 rounded-md transition duration-200" data-id="${user.id}">Excluir</button>
+                    </div>
+                `;
+                usersList.appendChild(userElement);
+            });
+
+            document.querySelectorAll('.edit-user-btn').forEach(button => {
+                button.addEventListener('click', (e) => editUser(e.target.dataset.id));
+            });
+            document.querySelectorAll('.delete-user-btn').forEach(button => {
+                button.addEventListener('click', (e) => deleteUser(e.target.dataset.id));
+            });
+        }
+
+        async function addNewUser() {
+            const { confirmed, data } = await showModal(
+                'Cadastrar Novo Usuário',
+                'Preencha os dados do novo usuário:',
+                true,
+                [
+                    { id: 'username', label: 'Nome de Usuário:', type: 'text' },
+                    { id: 'password', label: 'Senha:', type: 'password' },
+                    { id: 'role', label: 'Função:', tagName: 'select', options: [{value: 'Administrador', text: 'Administrador'}, {value: 'Técnico', text: 'Técnico'}, {value: 'Professor', text: 'Professor'}] }
+                ],
+                'Cadastrar'
+            );
+
+            if (confirmed && data.username && data.password) {
+                const newUser = {
+                    id: generateUniqueId('USER-'),
+                    username: data.username,
+                    password: data.password,
+                    role: data.role
+                };
+                users.push(newUser);
+                alertMessage('Usuário cadastrado com sucesso!', 'success');
+                renderUsers();
+            } else if (confirmed) {
+                alertMessage('Nome de usuário e senha são obrigatórios.', 'error');
+            } else {
+                alertMessage('Cadastro de usuário cancelado.', 'info');
+            }
+        }
+
+        async function editUser(id) {
+            const userIndex = users.findIndex(user => user.id === id);
+            if (userIndex === -1) return;
+            const userToEdit = users[userIndex];
+
+            const { confirmed, data } = await showModal(
+                `Alterar Usuário: ${userToEdit.username}`,
+                'Preencha os novos dados do usuário:',
+                true,
+                [
+                    { id: 'username', label: 'Nome de Usuário:', value: userToEdit.username },
+                    { id: 'password', label: 'Nova Senha (deixe em branco para não alterar):', type: 'password', value: '' },
+                    { id: 'role', label: 'Função:', tagName: 'select', value: userToEdit.role, options: [{value: 'Administrador', text: 'Administrador'}, {value: 'Técnico', text: 'Técnico'}, {value: 'Professor', text: 'Professor'}] }
+                ],
+                'Salvar Alterações'
+            );
+
+            if (confirmed) {
+                userToEdit.username = data.username;
+                if (data.password) {
+                    userToEdit.password = data.password;
+                }
+                userToEdit.role = data.role;
+                alertMessage('Usuário alterado com sucesso!', 'success');
+                renderUsers();
+            } else {
+                alertMessage('Alteração de usuário cancelada.', 'info');
+            }
+        }
+
+        async function deleteUser(id) {
+            const { confirmed } = await showModal(
+                'Confirmar Exclusão',
+                'Tem certeza que deseja excluir este usuário? Esta ação não pode ser desfeita.',
+                false,
+                [],
+                'Excluir',
+                'Cancelar'
+            );
+
+            if (confirmed) {
+                users = users.filter(user => user.id !== id);
+                alertMessage('Usuário excluído com sucesso!', 'success');
+                renderUsers();
+            } else {
+                alertMessage('Exclusão de usuário cancelada.', 'info');
+            }
+        }
+
+        const statusesList = document.getElementById('statuses-list');
+        const addStatusForm = document.getElementById('add-status-form');
+
+        function renderStatuses() {
+            statusesList.innerHTML = '';
+            if (customStatuses.length === 0) {
+                statusesList.innerHTML = '<p class="text-gray-500 text-center">Nenhum status cadastrado.</p>';
+                return;
+            }
+            customStatuses.forEach(status => {
+                const statusElement = document.createElement('div');
+                statusElement.className = 'bg-gray-50 p-3 rounded-md shadow-sm flex justify-between items-center';
+                statusElement.innerHTML = `
+                    <p class="font-semibold text-gray-800">${status.name}</p>
+                    <div class="flex space-x-2">
+                        <button class="edit-status-btn bg-yellow-500 hover:bg-yellow-600 text-white text-xs py-1 px-2 rounded-md transition duration-200" data-id="${status.id}">Alterar</button>
+                        <button class="delete-status-btn bg-red-500 hover:bg-red-600 text-white text-xs py-1 px-2 rounded-md transition duration-200" data-id="${status.id}">Excluir</button>
+                    </div>
+                `;
+                statusesList.appendChild(statusElement);
+            });
+
+            document.querySelectorAll('.edit-status-btn').forEach(button => {
+                button.addEventListener('click', (e) => editStatus(e.target.dataset.id));
+            });
+            document.querySelectorAll('.delete-status-btn').forEach(button => {
+                button.addEventListener('click', (e) => deleteStatus(e.target.dataset.id));
+            });
+        }
+
+        addStatusForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const newStatusName = document.getElementById('new-status-name').value;
+            if (newStatusName) {
+                const newStatus = { id: generateUniqueId('STATUS-'), name: newStatusName };
+                customStatuses.push(newStatus);
+                alertMessage('Status adicionado com sucesso!', 'success');
+                addStatusForm.reset();
+                renderStatuses();
+            } else {
+                alertMessage('O nome do status não pode ser vazio.', 'error');
+            }
+        });
+
+        async function editStatus(id) {
+            const statusIndex = customStatuses.findIndex(status => status.id === id);
+            if (statusIndex === -1) return;
+            const statusToEdit = customStatuses[statusIndex];
+
+            const { confirmed, data } = await showModal(
+                `Alterar Status: ${statusToEdit.name}`,
+                'Preencha o novo nome para o status:',
+                true,
+                [{ id: 'name', label: 'Novo Nome:', value: statusToEdit.name }],
+                'Salvar Alterações'
+            );
+
+            if (confirmed && data.name) {
+                statusToEdit.name = data.name;
+                alertMessage('Status alterado com sucesso!', 'success');
+                renderStatuses();
+            } else if (confirmed) {
+                alertMessage('O nome do status não pode ser vazio.', 'error');
+            } else {
+                alertMessage('Alteração de status cancelada.', 'info');
+            }
+        }
+
+        async function deleteStatus(id) {
+            const { confirmed } = await showModal(
+                'Confirmar Exclusão',
+                'Tem certeza que deseja excluir este status? Esta ação não pode ser desfeita.',
+                false, [], 'Excluir', 'Cancelar'
+            );
+
+            if (confirmed) {
+                customStatuses = customStatuses.filter(status => status.id !== id);
+                alertMessage('Status excluído com sucesso!', 'success');
+                renderStatuses();
+            } else {
+                alertMessage('Exclusão de status cancelada.', 'info');
+            }
+        }
+
+        const equipmentTypesList = document.getElementById('equipment-types-list');
+        const addEquipmentTypeForm = document.getElementById('add-equipment-type-form');
+
+        function renderEquipmentTypes() {
+            equipmentTypesList.innerHTML = '';
+            if (customEquipmentTypes.length === 0) {
+                equipmentTypesList.innerHTML = '<p class="text-gray-500 text-center">Nenhum tipo de equipamento cadastrado.</p>';
+                return;
+            }
+            customEquipmentTypes.forEach(type => {
+                const typeElement = document.createElement('div');
+                typeElement.className = 'bg-gray-50 p-3 rounded-md shadow-sm flex justify-between items-center';
+                typeElement.innerHTML = `
+                    <p class="font-semibold text-gray-800">${type.name}</p>
+                    <div class="flex space-x-2">
+                        <button class="edit-equipment-type-btn bg-yellow-500 hover:bg-yellow-600 text-white text-xs py-1 px-2 rounded-md transition duration-200" data-id="${type.id}">Alterar</button>
+                        <button class="delete-equipment-type-btn bg-red-500 hover:bg-red-600 text-white text-xs py-1 px-2 rounded-md transition duration-200" data-id="${type.id}">Excluir</button>
+                    </div>
+                `;
+                equipmentTypesList.appendChild(typeElement);
+            });
+
+            document.querySelectorAll('.edit-equipment-type-btn').forEach(button => {
+                button.addEventListener('click', (e) => editEquipmentType(e.target.dataset.id));
+            });
+            document.querySelectorAll('.delete-equipment-type-btn').forEach(button => {
+                button.addEventListener('click', (e) => deleteEquipmentType(e.target.dataset.id));
+            });
+        }
+
+        addEquipmentTypeForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const newTypeName = document.getElementById('new-equipment-type-name').value;
+            if (newTypeName) {
+                const newType = { id: generateUniqueId('TYPE-'), name: newTypeName };
+                customEquipmentTypes.push(newType);
+                alertMessage('Tipo de equipamento adicionado com sucesso!', 'success');
+                addEquipmentTypeForm.reset();
+                renderEquipmentTypes();
+                updateEquipmentTypeDropdowns();
+            } else {
+                alertMessage('O nome do tipo não pode ser vazio.', 'error');
+            }
+        });
+
+        async function editEquipmentType(id) {
+            const typeIndex = customEquipmentTypes.findIndex(type => type.id === id);
+            if (typeIndex === -1) return;
+            const typeToEdit = customEquipmentTypes[typeIndex];
+
+            const { confirmed, data } = await showModal(
+                `Alterar Tipo: ${typeToEdit.name}`,
+                'Preencha o novo nome para o tipo de equipamento:',
+                true,
+                [{ id: 'name', label: 'Novo Nome:', value: typeToEdit.name }],
+                'Salvar Alterações'
+            );
+
+            if (confirmed && data.name) {
+                typeToEdit.name = data.name;
+                alertMessage('Tipo de equipamento alterado com sucesso!', 'success');
+                renderEquipmentTypes();
+                updateEquipmentTypeDropdowns();
+            } else if (confirmed) {
+                alertMessage('O nome do tipo não pode ser vazio.', 'error');
+            } else {
+                alertMessage('Alteração de tipo de equipamento cancelada.', 'info');
+            }
+        }
+
+        async function deleteEquipmentType(id) {
+            const { confirmed } = await showModal(
+                'Confirmar Exclusão',
+                'Tem certeza que deseja excluir este tipo de equipamento? Esta ação não pode ser desfeita.',
+                false, [], 'Excluir', 'Cancelar'
+            );
+
+            if (confirmed) {
+                customEquipmentTypes = customEquipmentTypes.filter(type => type.id !== id);
+                alertMessage('Tipo de equipamento excluído com sucesso!', 'success');
+                renderEquipmentTypes();
+                updateEquipmentTypeDropdowns();
+            } else {
+                alertMessage('Exclusão de tipo de equipamento cancelada.', 'info');
+            }
+        }
+
+        function updateEquipmentTypeDropdowns() {
+            const osEquipmentSelect = document.getElementById('os-tipo-equipamento');
+            const ocorrenciaEquipmentSelect = document.getElementById('ocorrencia-equipamento');
+            const cadastroEquipmentSelect = document.getElementById('equipamento-tipo');
+
+            const commonOptions = `
+                <option value="">Selecione...</option>
+                ${customEquipmentTypes.map(type => `<option value="${type.name}">${type.name}</option>`).join('')}
+                <option value="Outros">Outros</option>
+            `;
+
+            if (osEquipmentSelect) osEquipmentSelect.innerHTML = commonOptions;
+            if (ocorrenciaEquipmentSelect) ocorrenciaEquipmentSelect.innerHTML = commonOptions;
+            if (cadastroEquipmentSelect) cadastroEquipmentSelect.innerHTML = commonOptions;
+        }
+
+        const themeToggle = document.getElementById('theme-toggle');
+
+        function applyTheme(theme) {
+            if (theme === 'dark') {
+                document.body.classList.add('dark-mode');
+                localStorage.setItem('theme', 'dark');
+                themeToggle.checked = true;
+            } else {
+                document.body.classList.remove('dark-mode');
+                localStorage.setItem('theme', 'light');
+                themeToggle.checked = false;
+            }
+        }
+
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        applyTheme(savedTheme);
+
+        themeToggle.addEventListener('change', () => {
+            if (themeToggle.checked) {
+                applyTheme('dark');
+            } else {
+                applyTheme('light');
+            }
+        });
+
+
+        occurrences.push({
+            id: generateUniqueId('OC-'),
+            ocorrenciaNumber: 'OC-20250528-001',
+            date: '28/05/2025',
+            tipoOcorrencia: 'Quebra',
+            equipment: 'Notebook',
+            otherEquipment: '',
+            description: 'Teclado não funciona.',
+            pessoasEnvolvidas: 'Aluno João',
+            responsavel: 'Prof. Ana',
+            fotos: [],
+            status: 'Aberto',
+            resolution: ''
+        });
+        occurrences.push({
+            id: generateUniqueId('OC-'),
+            ocorrenciaNumber: 'OC-20250527-002',
+            date: '27/05/2025',
+            tipoOcorrencia: 'Degradacao',
+            equipment: 'Cadeira',
+            otherEquipment: 'Cadeira quebrada',
+            description: 'Cadeira da sala 5 com encosto solto.',
+            pessoasEnvolvidas: 'Limpeza',
+            responsavel: 'Coordenação',
+            fotos: [],
+            status: 'Aguardando Resolucao',
+            resolution: ''
+        });
+        occurrences.push({
+            id: generateUniqueId('OC-'),
+            ocorrenciaNumber: 'OC-20250526-003',
+            date: '26/05/2025',
+            tipoOcorrencia: 'Roubo',
+            equipment: 'Projetor',
+            otherEquipment: '',
+            description: 'Projetor da sala 10 sumiu.',
+            pessoasEnvolvidas: 'Diretoria',
+            responsavel: 'Segurança',
+            fotos: [],
+            status: 'Concluida',
+            resolution: 'Projetor encontrado em outra sala.'
+        });
+
+
+        equipments.push({ id: generateUniqueId('EQ-'), name: 'Projetor Sala de Aula', type: 'Projetor', otherType: '', serialNumber: 'PRJ001' });
+        equipments.push({ id: generateUniqueId('EQ-'), name: 'Servidor Principal', type: 'Servidor de Rede', otherType: 'Servidor de Rede', serialNumber: 'SRV001' });
+        equipments.push({ id: generateUniqueId('EQ-'), name: 'Lousa Interativa', type: 'Lousa Digital', otherType: 'Lousa Digital', serialNumber: 'LOU001' });
+
+        serviceOrders.push({
+            id: generateUniqueId('OS-'),
+            osNumber: 'OS-20250528-001',
+            date: '28/05/2025',
+            setorUsuario: 'Administração',
+            nomeUsuario: 'Carlos Pereira',
+            tipoEquipamento: 'Desktop',
+            tipoChamado: 'Urgente',
+            status: 'Aberto',
+            descricao: 'Computador não liga após queda de energia.',
+            tecnicoResponsavel: 'João Silva',
+            resolution: '',
+            partsUsed: [],
+            servicesPerformed: '',
+            userSignatureName: ''
+        });
+        serviceOrders.push({
+            id: generateUniqueId('OS-'),
+            osNumber: 'OS-20250527-002',
+            date: '27/05/2025',
+            setorUsuario: 'Biblioteca',
+            nomeUsuario: 'Mariana Costa',
+            tipoEquipamento: 'Impressora',
+            tipoChamado: 'Moderado',
+            status: 'Em Atendimento',
+            descricao: 'Impressora com atolamento de papel frequente.',
+            tecnicoResponsavel: 'Maria Souza',
+            resolution: '',
+            partsUsed: [],
+            servicesPerformed: '',
+            userSignatureName: ''
+        });
+        serviceOrders.push({
+            id: generateUniqueId('OS-'),
+            osNumber: 'OS-20250526-003',
+            date: '26/05/2025',
+            setorUsuario: 'Secretaria',
+            nomeUsuario: 'Fernanda Lima',
+            tipoEquipamento: 'Notebook',
+            tipoChamado: 'Leve',
+            status: 'Concluido',
+            descricao: 'Limpeza e otimização de sistema.',
+            tecnicoResponsavel: 'João Silva',
+            resolution: 'Sistema operacional reinstalado e otimizado.',
+            partsUsed: [{name: 'Pasta Térmica', quantity: 1}],
+            servicesPerformed: 'Limpeza interna e reinstalação de drivers.',
+            userSignatureName: 'Fernanda Lima'
+        });
+        serviceOrders.push({
+            id: generateUniqueId('OS-'),
+            osNumber: 'OS-20250525-004',
+            date: '25/05/2025',
+            setorUsuario: 'Coordenação',
+            nomeUsuario: 'Roberto Alves',
+            tipoEquipamento: 'Projetor',
+            tipoChamado: 'Urgente',
+            status: 'Aguardando',
+            descricao: 'Projetor não exibe imagem.',
+            tecnicoResponsavel: 'Maria Souza',
+            resolution: '',
+            partsUsed: [],
+            servicesPerformed: '',
+            userSignatureName: ''
+        });
+
+
+        comodatos.push({ id: generateUniqueId('CM-'), dataHorario: '28/05/2025 10:30:00', nomeProfessor: 'Prof. Ana Costa', numeroNotebook: 'NB-001', numeroProjetor: '', dataDevolucao: '' });
+        comodatos.push({ id: generateUniqueId('CM-'), dataHorario: '27/05/2025 14:15:00', nomeProfessor: 'Prof. Pedro Lima', numeroNotebook: '', numeroProjetor: 'PRJ-005', dataDevolucao: '' });
+        comodatos.push({ id: generateUniqueId('CM-'), dataHorario: '28/05/2025 09:00:00', nomeProfessor: 'Prof. Carlos Santos', numeroNotebook: 'NB-002', numeroProjetor: '', dataDevolucao: '28/05/2025' });
+        comodatos.push({ id: generateUniqueId('CM-'), dataHorario: '26/05/2025 11:00:00', nomeProfessor: 'Prof. Sofia Mendes', numeroNotebook: '', numeroProjetor: 'PRJ-006', dataDevolucao: '26/05/2025' });
+
+
+        stockItems.push({ id: generateUniqueId('ST-'), name: 'Cabo HDMI', quantity: 15, unit: 'Unidades', location: 'Almoxarifado', description: 'Cabos para conexão de vídeo.' });
+        stockItems.push({ id: generateUniqueId('ST-'), name: 'Cartucho Tinta HP 664', quantity: 8, unit: 'Caixas', location: 'Sala de Impressão', description: 'Cartuchos de tinta preta e colorida.' });
+        stockItems.push({ id: generateUniqueId('ST-'), name: 'Pilha AA', quantity: 50, unit: 'Unidades', location: 'Almoxarifado', description: 'Pilhas alcalinas para diversos equipamentos.' });
+        stockItems.push({ id: generateUniqueId('ST-'), name: 'Pasta Térmica', quantity: 5, unit: 'Unidades', location: 'Almoxarifado', description: 'Pasta térmica para processadores.' });
+
+
+        // Lógica de Login
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            if (username === 'admin' && password === 'admin') {
+                loginScreen.classList.add('hidden');
+                mainSystemContent.classList.remove('hidden');
+                alertMessage('Login realizado com sucesso!', 'success');
+                
+                document.querySelector('.nav-item[data-target="dashboard-screen"]').click();
+            } else {
+                loginError.classList.remove('hidden');
+                setTimeout(() => {
+                    loginError.classList.add('hidden');
+                }, 3000);
+                alertMessage('Usuário ou senha incorretos!', 'error');
+            }
+        });
+
+        // Lógica de Logout
+        logoutButton.addEventListener('click', () => {
+            mainSystemContent.classList.add('hidden');
+            loginScreen.classList.remove('hidden');
+            loginForm.reset();
+            alertMessage('Você saiu do sistema.', 'info');
+        });
+
+        window.onload = function() {
+            loginScreen.classList.remove('hidden');
+            mainSystemContent.classList.add('hidden');
+        };
+    </script>
+</body>
+</html>
