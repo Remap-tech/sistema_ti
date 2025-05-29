@@ -1,5 +1,3 @@
-# sistema_ti
-Sistema de Gerenciamento Escolar — Uma aplicação web responsiva feita com HTML, TailwindCSS e JavaScript, voltada para o controle de ordens de serviço, ocorrências, comodatos, estoque e relatórios em ambiente escolar. Interface moderna, com suporte a modo escuro e recursos administrativos completos.
 O projeto é um Sistema de Gerenciamento Escolar desenvolvido em HTML, CSS (TailwindCSS), e JavaScript puro. Ele oferece uma interface robusta de painel administrativo para escolas, com diversas funcionalidades. Abaixo, os principais pontos:
 
 ✅ Funcionalidades principais:
